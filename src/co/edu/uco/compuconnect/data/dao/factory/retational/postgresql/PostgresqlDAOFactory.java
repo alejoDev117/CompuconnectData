@@ -2,6 +2,7 @@ package co.edu.uco.compuconnect.data.dao.factory.retational.postgresql;
 
 import java.sql.Connection;
 
+import co.edu.uco.compuconnect.crosscutting.utils.UtilSql;
 import co.edu.uco.compuconnect.data.dao.AgendaDAO;
 import co.edu.uco.compuconnect.data.dao.AgendaReservaDAO;
 import co.edu.uco.compuconnect.data.dao.BuzonSolicitudDAO;
@@ -96,7 +97,7 @@ public final class PostgresqlDAOFactory extends DAOFactory {
 
 	@Override
 	public void cerrarConexion() {
-		// TODO Auto-generated method stub
+		UtilSql.closeConnection(connection);
 		
 	}
 
