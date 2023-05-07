@@ -18,6 +18,7 @@ import co.edu.uco.compuconnect.data.dao.EstadoSolicitudDAO;
 import co.edu.uco.compuconnect.data.dao.ExcepcionAgendaDAO;
 import co.edu.uco.compuconnect.data.dao.ExcepcionDAO;
 import co.edu.uco.compuconnect.data.dao.FrecuenciaDAO;
+import co.edu.uco.compuconnect.data.dao.HorarioPersonaEncargadaDAO;
 import co.edu.uco.compuconnect.data.dao.MonitorDAO;
 import co.edu.uco.compuconnect.data.dao.NotificacionDAO;
 import co.edu.uco.compuconnect.data.dao.PerfilDAO;
@@ -37,13 +38,31 @@ import co.edu.uco.compuconnect.data.dao.TipoReservaDAO;
 import co.edu.uco.compuconnect.data.dao.TipoSolicitudDAO;
 import co.edu.uco.compuconnect.data.dao.TipoUsuarioDAO;
 import co.edu.uco.compuconnect.data.dao.UsuarioDAO;
+import co.edu.uco.compuconnect.data.dao.factory.retational.postgresql.PostgresqlDAOFactory;
 
 public abstract class DAOFactory {
 
 	
+	public static DAOFactory getFactory(final Factory factory) {
+		
+		DAOFactory daoFactory;
+		
+		switch (factory) {
+		case POSTGRESQL: {
+			daoFactory = new PostgresqlDAOFactory();
+			break;
+		}
+		default:
+			throw new IllegalArgumentException("No implements Yet!");
+		}
+		
+		return daoFactory;
+	}
 	
-	public abstract void abrirConexion();
-	public abstract void cerrarConexion();
+	
+	
+	protected abstract void abrirConexion();
+	public  abstract void cerrarConexion();
 	public abstract void iniciarTransaccion();
 	public abstract void confirmarTransaccion();
 	public abstract void cancelarTransaccion();
@@ -122,6 +141,8 @@ public abstract class DAOFactory {
 	public abstract ReservaPerfilDAO getReservaPerfil();
 	
 	public abstract SolicitudPerfilDAO getSolicitudPerfilDAO();
+	
+	public abstract  HorarioPersonaEncargadaDAO getHorarioPersonaEncargadaDAO();
 	
 	
 }
