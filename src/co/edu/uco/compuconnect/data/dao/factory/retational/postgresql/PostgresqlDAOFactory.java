@@ -8,7 +8,9 @@ import co.edu.uco.compuconnect.data.dao.AgendaReservaDAO;
 import co.edu.uco.compuconnect.data.dao.BuzonSolicitudDAO;
 import co.edu.uco.compuconnect.data.dao.CentroInformaticaDAO;
 import co.edu.uco.compuconnect.data.dao.CentroInformaticaEquipoComputoDAO;
+import co.edu.uco.compuconnect.data.dao.ContenidoDAO;
 import co.edu.uco.compuconnect.data.dao.CoordinadorDAO;
+import co.edu.uco.compuconnect.data.dao.DestinatarioDAO;
 import co.edu.uco.compuconnect.data.dao.DestinatarioNotificacionDAO;
 import co.edu.uco.compuconnect.data.dao.DetalleReservaDAO;
 import co.edu.uco.compuconnect.data.dao.DiaFestivoDAO;
@@ -27,6 +29,7 @@ import co.edu.uco.compuconnect.data.dao.NotificacionDAO;
 import co.edu.uco.compuconnect.data.dao.PerfilDAO;
 import co.edu.uco.compuconnect.data.dao.PeriodoFuncionamientoDAO;
 import co.edu.uco.compuconnect.data.dao.PeriodoFuncionamientoDiaFestivoDAO;
+import co.edu.uco.compuconnect.data.dao.PersonaEncargadaDAO;
 import co.edu.uco.compuconnect.data.dao.ReservaDAO;
 import co.edu.uco.compuconnect.data.dao.ReservaPerfilDAO;
 import co.edu.uco.compuconnect.data.dao.RespuestaDAO;
@@ -47,8 +50,10 @@ import co.edu.uco.compuconnect.data.dao.relational.postgresql.AgendaReservaPostg
 import co.edu.uco.compuconnect.data.dao.relational.postgresql.BuzonSolicitudPostgresqlDAO;
 import co.edu.uco.compuconnect.data.dao.relational.postgresql.CentroInformaticaEquipoComputoPostgresqlDAO;
 import co.edu.uco.compuconnect.data.dao.relational.postgresql.CentroInformaticaPostgresqlDAO;
+import co.edu.uco.compuconnect.data.dao.relational.postgresql.ContenidoPostgresqlDAO;
 import co.edu.uco.compuconnect.data.dao.relational.postgresql.CoordinadorPostgresqlDAO;
 import co.edu.uco.compuconnect.data.dao.relational.postgresql.DestinatarioNotificacionPostgresqlDAO;
+import co.edu.uco.compuconnect.data.dao.relational.postgresql.DestinatarioPostgresqlDAO;
 import co.edu.uco.compuconnect.data.dao.relational.postgresql.DetalleReservaPostgresqlDAO;
 import co.edu.uco.compuconnect.data.dao.relational.postgresql.DiaFestivoPostgresqlDAO;
 import co.edu.uco.compuconnect.data.dao.relational.postgresql.DiaSemanalPostgresqlDAO;
@@ -66,6 +71,7 @@ import co.edu.uco.compuconnect.data.dao.relational.postgresql.NotificacionPostgr
 import co.edu.uco.compuconnect.data.dao.relational.postgresql.PerfilPostgresqlDAO;
 import co.edu.uco.compuconnect.data.dao.relational.postgresql.PeriodoFuncionamientoDiaFestivoPostgresqlDAO;
 import co.edu.uco.compuconnect.data.dao.relational.postgresql.PeriodoFuncionamientoPostgresqlDAO;
+import co.edu.uco.compuconnect.data.dao.relational.postgresql.PersonaEncargadaPostgresqlDAO;
 import co.edu.uco.compuconnect.data.dao.relational.postgresql.ReservaPerfilPostgresqlDAO;
 import co.edu.uco.compuconnect.data.dao.relational.postgresql.ReservaPostgresqlDAO;
 import co.edu.uco.compuconnect.data.dao.relational.postgresql.RespuestaPostgresqlDAO;
@@ -307,6 +313,26 @@ public final class PostgresqlDAOFactory extends DAOFactory {
 	@Override
 	public HorarioPersonaEncargadaDAO getHorarioPersonaEncargadaDAO() {
 		return new HorarioPersonaEncargadaPostgresqlDAO(connection);
+	}
+
+	@Override
+	public ContenidoDAO getContenidoDAO() {
+		return new ContenidoPostgresqlDAO(connection);
+	}
+
+	@Override
+	public DestinatarioDAO getDestinatarioDAO() {
+		return new DestinatarioPostgresqlDAO(connection);
+	}
+
+	@Override
+	public PersonaEncargadaDAO getPersonaEncargadaDAO() {
+		return new PersonaEncargadaPostgresqlDAO(connection);
+	}
+
+	@Override
+	public ReservaPerfilDAO getReservaPerfilDAO() {
+		return new ReservaPerfilPostgresqlDAO(connection);
 	}
 
 }

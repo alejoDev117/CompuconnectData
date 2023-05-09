@@ -29,5 +29,11 @@ public final class PerfilPostgresqlDAO implements PerfilDAO{
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void update(PerfilEntity entity) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
