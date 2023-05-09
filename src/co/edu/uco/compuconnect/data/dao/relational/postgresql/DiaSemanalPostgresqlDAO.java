@@ -5,6 +5,7 @@ import java.util.List;
 
 import co.edu.uco.compuconnect.data.dao.DiaSemanalDAO;
 import co.edu.uco.compuconnect.entities.DiaFestivoEntity;
+import co.edu.uco.compuconnect.entities.DiaSemanalEntity;
 
 public final  class DiaSemanalPostgresqlDAO implements DiaSemanalDAO{
 
@@ -12,13 +13,13 @@ public final  class DiaSemanalPostgresqlDAO implements DiaSemanalDAO{
 		
 	}
 	@Override
-	public void create(DiaFestivoEntity entity) {
+	public void create(DiaSemanalEntity entity) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public List<DiaFestivoEntity> read(DiaFestivoEntity entity) {
+	public List<DiaSemanalEntity> read(DiaSemanalEntity entity) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -10,6 +10,8 @@ public interface PerfilDAO {
 	
 	List<PerfilEntity> read(PerfilEntity entity);
 	
+	void update(PerfilEntity entity);
+	
 	void delete(PerfilEntity entity);
 	
 }

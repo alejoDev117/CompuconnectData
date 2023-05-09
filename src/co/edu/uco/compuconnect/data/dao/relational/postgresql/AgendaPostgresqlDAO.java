@@ -32,4 +32,10 @@ public final class AgendaPostgresqlDAO implements AgendaDAO{
 		
 	}
 
+	@Override
+	public void uptade(AgendaEntity entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
