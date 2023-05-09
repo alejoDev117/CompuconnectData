@@ -10,6 +10,8 @@ public interface AgendaDAO {
 	
 	List<AgendaEntity> read(AgendaEntity entity);
 	
+	void uptade(AgendaEntity entity);
+	
 	void delete(AgendaEntity entity);
 	
 	

@@ -3,11 +3,12 @@ package co.edu.uco.compuconnect.data.dao;
 import java.util.List;
 
 import co.edu.uco.compuconnect.entities.DiaFestivoEntity;
+import co.edu.uco.compuconnect.entities.DiaSemanalEntity;
 
 public interface DiaSemanalDAO {
 	
-	void create(DiaFestivoEntity entity);
+	void create(DiaSemanalEntity entity);
 	
-	List<DiaFestivoEntity> read(DiaFestivoEntity entity);
+	List<DiaSemanalEntity> read(DiaSemanalEntity entity);
 
 }

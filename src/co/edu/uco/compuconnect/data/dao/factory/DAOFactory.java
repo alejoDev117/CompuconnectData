@@ -5,7 +5,9 @@ import co.edu.uco.compuconnect.data.dao.AgendaReservaDAO;
 import co.edu.uco.compuconnect.data.dao.BuzonSolicitudDAO;
 import co.edu.uco.compuconnect.data.dao.CentroInformaticaDAO;
 import co.edu.uco.compuconnect.data.dao.CentroInformaticaEquipoComputoDAO;
+import co.edu.uco.compuconnect.data.dao.ContenidoDAO;
 import co.edu.uco.compuconnect.data.dao.CoordinadorDAO;
+import co.edu.uco.compuconnect.data.dao.DestinatarioDAO;
 import co.edu.uco.compuconnect.data.dao.DestinatarioNotificacionDAO;
 import co.edu.uco.compuconnect.data.dao.DetalleReservaDAO;
 import co.edu.uco.compuconnect.data.dao.DiaFestivoDAO;
@@ -24,6 +26,7 @@ import co.edu.uco.compuconnect.data.dao.NotificacionDAO;
 import co.edu.uco.compuconnect.data.dao.PerfilDAO;
 import co.edu.uco.compuconnect.data.dao.PeriodoFuncionamientoDAO;
 import co.edu.uco.compuconnect.data.dao.PeriodoFuncionamientoDiaFestivoDAO;
+import co.edu.uco.compuconnect.data.dao.PersonaEncargadaDAO;
 import co.edu.uco.compuconnect.data.dao.ReservaDAO;
 import co.edu.uco.compuconnect.data.dao.ReservaPerfilDAO;
 import co.edu.uco.compuconnect.data.dao.RespuestaDAO;
@@ -144,5 +147,12 @@ public abstract class DAOFactory {
 	
 	public abstract  HorarioPersonaEncargadaDAO getHorarioPersonaEncargadaDAO();
 	
+	public abstract ContenidoDAO getContenidoDAO();
+	
+	public abstract DestinatarioDAO getDestinatarioDAO();
+	
+	public abstract PersonaEncargadaDAO getPersonaEncargadaDAO();
+	
+	public abstract ReservaPerfilDAO getReservaPerfilDAO();
 	
 }
