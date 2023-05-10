@@ -17,16 +17,21 @@
       </plugin>
     </plugins>
   </build>
-  <dependencies> 
-	  <dependency>
-		  <groupId>co.edu.uco.compuconnect</groupId>
-          <artifactId>CompuconnectCrossCutting</artifactId>
-          <version>0.0.1-SNAPSHOT</version>
-	  </dependency>
-	  <dependency> 
-		   <groupId>co.edu.uco.compuconnect</groupId>
-           <artifactId>CompuconnectEntities</artifactId>
-   		   <version>0.0.1-SNAPSHOT</version>
-	  </dependency>
-  </dependencies>
+ <dependencies> 
+    <dependency>
+        <groupId>co.edu.uco.compuconnect</groupId>
+        <artifactId>CompuconnectCrossCutting</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>42.2.23</version> 
+    </dependency>
+    <dependency> 
+        <groupId>co.edu.uco.compuconnect</groupId>
+        <artifactId>CompuconnectEntities</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+</dependencies>
 </project>

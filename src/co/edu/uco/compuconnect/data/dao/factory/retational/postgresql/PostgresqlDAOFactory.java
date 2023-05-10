@@ -103,7 +103,7 @@ public final class PostgresqlDAOFactory extends DAOFactory {
 
 	@Override
 	public void cerrarConexion() {
-		UtilSql.closeConnection(connection);
+		//UtilSql.cerrarConexion(connection);
 		
 	}
 
