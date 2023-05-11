@@ -35,7 +35,7 @@ public class BaseDeDatos {
 
     public static void main(String[] args) {
         String user = "postgres";
-        String password = "Bijuus12";
+        String password = "pass";
         String host = "localhost"; 
 
         BaseDeDatos bd = new BaseDeDatos(user, password, host);
