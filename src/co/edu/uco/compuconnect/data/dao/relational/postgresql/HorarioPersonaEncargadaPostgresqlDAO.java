@@ -43,7 +43,6 @@ public final class HorarioPersonaEncargadaPostgresqlDAO implements HorarioPerson
     public void update(HorarioPersonaEncargadaEntity entity) {
         String sql = "UPDATE horarios_persona_encargada SET tiempo_funcionamiento = ?, persona_encargada = ?, hora_inicio = ?, hora_fin = ? WHERE identificador = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            // Set the new values for the PreparedStatement
             statement.setObject(1, entity.getTiempoFuncionamiento());
             statement.setObject(2, entity.getPersonaEncargada());
             statement.setObject(3, entity.getHoraInicio());
