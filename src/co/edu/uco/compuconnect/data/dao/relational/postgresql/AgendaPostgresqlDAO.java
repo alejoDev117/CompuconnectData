@@ -48,11 +48,11 @@ public final class AgendaPostgresqlDAO implements AgendaDAO {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 UUID identificador = UUID.fromString(resultSet.getString("identificador"));
-                PeriodoFuncionamientoEntity periodoFuncionamiento = new PeriodoFuncionamientoEntity();
+                PeriodoFuncionamientoEntity periodoFuncionamiento = PeriodoFuncionamientoEntity.getDefaultObject();
                 String centroInformatica = resultSet.getString("centro_informatica");
                 String nombre = resultSet.getString("nombre");
 
-                AgendaEntity agendaEntity = new AgendaEntity();
+                AgendaEntity agendaEntity = AgendaEntity.getDefaultObject();
                 agendaList.add(agendaEntity);
             }
         } catch (SQLException e) {
