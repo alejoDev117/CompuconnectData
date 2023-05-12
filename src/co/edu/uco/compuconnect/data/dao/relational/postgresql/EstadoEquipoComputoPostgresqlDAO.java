@@ -22,7 +22,7 @@ public final class EstadoEquipoComputoPostgresqlDAO implements EstadoEquipoCompu
 
     @Override
     public void create(EstadoEquipoComputoEntity entity) {
-        String sql = "INSERT INTO EstadoEquipoComputo (identificador, nombre, descripcion) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO estadoEquipoComputo (identificador, nombre, descripcion) VALUES (?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setObject(1, entity.getIdentificador());
@@ -50,10 +50,8 @@ public final class EstadoEquipoComputoPostgresqlDAO implements EstadoEquipoCompu
 
             EstadoEquipoComputoPostgresqlDAO estadoEquipoComputoPostgresqlDAO = new EstadoEquipoComputoPostgresqlDAO(connection);
 
-            EstadoEquipoComputoEntity estadoEquipo = new EstadoEquipoComputoEntity();
-            estadoEquipo.setIdentificador(UUID.randomUUID());
-            estadoEquipo.setNombre("Activo");
-            estadoEquipo.setDescripcion("El estado está activo");
+            EstadoEquipoComputoEntity estadoEquipo = new EstadoEquipoComputoEntity(UUID.randomUUID(),"Activo","El estado está activo");
+      
             estadoEquipoComputoPostgresqlDAO.create(estadoEquipo);
             System.out.println("Creado correctamente");
         } finally {
