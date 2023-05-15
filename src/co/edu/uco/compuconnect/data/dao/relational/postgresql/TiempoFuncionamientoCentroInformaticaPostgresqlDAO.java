@@ -14,6 +14,7 @@ public final class TiempoFuncionamientoCentroInformaticaPostgresqlDAO implements
     private final Connection connection;
 	
 	public TiempoFuncionamientoCentroInformaticaPostgresqlDAO(final Connection connection) {
+		this.connection = connection;
 		
 	}
 		

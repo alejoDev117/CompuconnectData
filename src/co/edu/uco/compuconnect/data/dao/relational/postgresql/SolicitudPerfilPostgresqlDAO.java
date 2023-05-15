@@ -3,6 +3,7 @@ package co.edu.uco.compuconnect.data.dao.relational.postgresql;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.uco.compuconnect.data.dao.SolicitudPerfilDAO;
