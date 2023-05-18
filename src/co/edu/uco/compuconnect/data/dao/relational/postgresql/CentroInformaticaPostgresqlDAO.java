@@ -6,66 +6,151 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
+import co.edu.uco.compuconnect.crosscutting.utils.UtilBoolean;
+import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
+import co.edu.uco.compuconnect.crosscutting.utils.UtilText;
+import co.edu.uco.compuconnect.crosscutting.utils.UtilUUID;
 import co.edu.uco.compuconnect.data.dao.CentroInformaticaDAO;
+import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
 import co.edu.uco.compuconnect.entities.CentroInformaticaEntity;
 
-public final class CentroInformaticaPostgresqlDAO implements CentroInformaticaDAO {
-
-    private final Connection connection;
+public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformaticaEntity> implements CentroInformaticaDAO {
 
     public CentroInformaticaPostgresqlDAO(final Connection connection) {
-        this.connection = connection;
+        super(connection);
     }
 
     @Override
     public void create(CentroInformaticaEntity entity) {
-        String sql = "INSERT INTO CentroInformatica (identificador, nombre, ubicacion, posee_video_beam) VALUES (?, ?, ?, ?)";
+        var sqlStament = "INSERT INTO CentroInformatica (identificador, nombre, ubicacion, posee_video_beam) VALUES (?, ?, ?, ?)";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setObject(1, entity.getIdentificador());
-            statement.setString(2, entity.getNombre());
-            statement.setString(3, entity.getUbicacion());
-            statement.setBoolean(4, entity.isPoseeVideoBeam());
+        try (var preparedStament = getConnection().prepareStatement(sqlStament)) {
+            preparedStament.setObject(1, entity.getIdentificador());
+            preparedStament.setString(2, entity.getNombre());
+            preparedStament.setString(3, entity.getUbicacion());
+            preparedStament.setBoolean(4, entity.isPoseeVideoBeam());
 
-            statement.executeUpdate();
+            preparedStament.executeUpdate();
 
-        } catch (SQLException e) {
-            // excepcion
-        }
+        }catch (final SQLException exception) {
+			var userMessage = "Se ha presentado un problema tratando de registrar la informacion del nuevo estado tipo relacion institucion";
+			var technicalMessage ="Se ha presentado un problema de tipo SQLException dentro del metodo create de la clase EstadoTipoRelacionInstitucionSqlServerDAO, Por favor verifique la traza completa del error";
+			
+			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
+		}catch (final Exception exception) {
+			var userMessage = "Se ha presentado un problema inesperado tratando de registrar la informacion del nuevo estado tipo relacion institucion";
+			var technicalMessage ="Se ha presentado un problema inesperado dentro del metodo create de la clase EstadoTipoRelacionInstitucionSqlServerDAO, Por favor verifique la traza completa del error";
+			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
+		}
     }
 
     @Override
     public List<CentroInformaticaEntity> read(CentroInformaticaEntity entity) {
-        List<CentroInformaticaEntity> centroInformaticaList = new ArrayList<>();
-        String sql = "SELECT identificador, nombre, ubicacion, posee_video_beam FROM CentroInformatica WHERE identificador = ?";
-        return centroInformaticaList;
+    	var sqlStatement = new StringBuilder();
+		var parameters = new ArrayList<>();
+		
+		sqlStatement.append(prepareSelect());
+		sqlStatement.append(prepareFrom());
+		sqlStatement.append(prepareWhere(entity, parameters));
+		sqlStatement.append(prepareOrderBy());
+		
+		try (var preparedStament = getConnection().prepareStatement(sqlStatement.toString())){
+			
+		} catch (SQLException exception) {
+			
+		} catch (Exception exception) {
+			
+		}
+		
+		return null;
     }
 
     @Override
     public void update(CentroInformaticaEntity entity) {
-        String sql = "UPDATE CentroInformatica SET nombre = ?, ubicacion = ?, posee_video_beam = ? WHERE identificador = ?";
+        var sqlStament = "UPDATE CentroInformatica SET nombre = ?, ubicacion = ?, posee_video_beam = ? WHERE identificador = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, entity.getNombre());
-            statement.setString(2, entity.getUbicacion());
-            statement.setBoolean(3, entity.isPoseeVideoBeam());
+        try (var preparedStament = getConnection().prepareStatement(sqlStament)) {
+        	preparedStament.setString(1, entity.getNombre());
+        	preparedStament.setString(2, entity.getUbicacion());
+        	preparedStament.setBoolean(3, entity.isPoseeVideoBeam());
+        	preparedStament.setObject(4, entity.getIdentificador());
 
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            //excepcion
-        }
+            preparedStament.executeUpdate();
+        }catch (final SQLException exception) {
+			var userMessage = "Se ha presentado un problema tratando de modificar la informacion del nuevo estado tipo relacion institucion";
+			var technicalMessage ="Se ha presentado un problema de tipo SQLException dentro del metodo update de la clase EstadoTipoRelacionInstitucionSqlServerDAO, Por favor verifique la traza completa del error";
+			
+			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
+		}catch (final Exception exception) {
+			var userMessage = "Se ha presentado un problema inesperado tratando de mofificar la informacion del nuevo estado tipo relacion institucion";
+			var technicalMessage ="Se ha presentado un problema inesperado dentro del metodo update de la clase EstadoTipoRelacionInstitucionSqlServerDAO, Por favor verifique la traza completa del error";
+			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
+		}
     }
 
     @Override
     public void delete(CentroInformaticaEntity entity) {
-        String sql = "DELETE FROM CentroInformatica WHERE identificador = ?";
+    	var sqlStament = "DELETE FROM EstadoTipoRelacionInstitucion WHERE identificador=?)";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setObject(1, entity.getIdentificador());
-
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            //excepcion
-        }
+		try (var preparedStatement = getConnection().prepareStatement(sqlStament)) {
+			preparedStatement.setObject(1, entity.getIdentificador());
+			
+			preparedStatement.executeUpdate();
+		}catch (final SQLException exception) {
+			var userMessage = "Se ha presentado un problema tratando de eliminar la informacion del nuevo estado tipo relacion institucion";
+			var technicalMessage ="Se ha presentado un problema de tipo SQLException dentro del metodo delete de la clase EstadoTipoRelacionInstitucionSqlServerDAO, Por favor verifique la traza completa del error";
+			
+			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
+		}catch (final Exception exception) {
+			var userMessage = "Se ha presentado un problema inesperado tratando de eliminar la informacion del nuevo estado tipo relacion institucion";
+			var technicalMessage ="Se ha presentado un problema inesperado dentro del metodo delete de la clase EstadoTipoRelacionInstitucionSqlServerDAO, Por favor verifique la traza completa del error";
+			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
+		}
     }
+
+	@Override
+	protected String prepareSelect() {
+		return "SELECT identificador, nombre, ubicacion, poseeVideoBeam ";
+	}
+
+	@Override
+	protected String prepareFrom() {
+		return "FROM CentroInformatica";
+	}
+
+	@Override
+	protected String prepareWhere(CentroInformaticaEntity entity, List<Object> parameters) {
+		final var where = new StringBuilder("");
+		parameters = UtilObject.getDefault(parameters, new ArrayList<>());
+		
+		var setWhere = true;
+		
+		if(!UtilObject.isNull(entity)) {
+			
+			if(!UtilUUID.isDefault(entity.getIdentificador())) {
+				parameters.add(entity.getIdentificador());
+				where.append("WHERE identificador=? ");
+				setWhere = false;
+			}
+			
+			if(!UtilText.getUtilText().isEmpty(entity.getNombre())) {
+				parameters.add(entity.getNombre());
+				where.append(setWhere ? "WHERE " : "AND ").append("nombre=? ");
+				setWhere = false;
+			}
+			if(!UtilText.getUtilText().isEmpty(entity.getUbicacion())) {
+				parameters.add(entity.getUbicacion());
+				where.append("WHERE descripcion LIKE %?% ");
+			}
+			
+		}
+		
+		return where.toString();
+	}
+
+	@Override
+	protected String prepareOrderBy() {
+		return  "ORDER BY nombre ASC";
+	}
 }

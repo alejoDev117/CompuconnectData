@@ -6,67 +6,175 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
+import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
+import co.edu.uco.compuconnect.crosscutting.utils.UtilText;
+import co.edu.uco.compuconnect.crosscutting.utils.UtilUUID;
 import co.edu.uco.compuconnect.data.dao.UsuarioDAO;
+import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
 import co.edu.uco.compuconnect.entities.UsuarioEntity;
 
-public final class UsuarioPostgresqlDAO implements UsuarioDAO {
-
-    private Connection connection;
+public final class UsuarioPostgresqlDAO extends SqlDAO<UsuarioEntity> implements UsuarioDAO {
 
     public UsuarioPostgresqlDAO(final Connection connection) {
-        this.connection = connection;
+        super(connection);
     }
 
     @Override
     public void create(UsuarioEntity entity) {
-        String query = "INSERT INTO usuario (identificador, tipo_usuario, nombre, tipo_identificacion, identificacion, correo_institucional) VALUES (?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setObject(1, entity.getIdentificador());
-            statement.setObject(2, entity.getTipoUsuario());
-            statement.setString(3, entity.getNombre());
-            statement.setObject(4, entity.getTipoIdentificacion());
-            statement.setString(5, entity.getIdentificacion());
-            statement.setString(6, entity.getCorreoInstitucional());
+        var sqlStatement = "INSERT INTO Usuario (identificador, tipo_usuario, nombre, tipo_identificacion, identificacion, correo_institucional) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
 
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            //excepcion
-        }
-    }
+        try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
+            preparedStatement.setObject(1, entity.getIdentificador());
+            preparedStatement.setObject(2, entity.getTipoUsuario().toString());
+            preparedStatement.setString(3, entity.getNombre());
+            preparedStatement.setObject(4, entity.getTipoIdentificacion());
+            preparedStatement.setString(5, entity.getIdentificacion());
+            preparedStatement.setString(6, entity.getCorreoInstitucional());
 
-    @Override
-    public void update(UsuarioEntity entity) {
-        String query = "UPDATE usuario SET tipo_usuario = ?, nombre = ?, tipo_identificacion = ?, identificacion = ?, correo_institucional = ? WHERE identificador = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setObject(1, entity.getTipoUsuario());
-            statement.setString(2, entity.getNombre());
-            statement.setObject(3, entity.getTipoIdentificacion());
-            statement.setString(4, entity.getIdentificacion());
-            statement.setString(5, entity.getCorreoInstitucional());
-            statement.setObject(6, entity.getIdentificador());
+            preparedStatement.executeUpdate();
 
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            // Manejo de excepciones
+        } catch (final SQLException exception) {
+            var mensajeUsuario = "Se ha producido un problema al intentar crear el usuario";
+            var mensajeTecnico = "Se ha producido un problema de tipo SQLException en el método crear de la clase UsuarioPostgresqlDAO. Por favor, verifica la traza completa del error.";
+
+            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
+        } catch (final Exception exception) {
+            var mensajeUsuario = "Se ha producido un problema inesperado al intentar crear el usuario";
+            var mensajeTecnico = "Se ha producido un problema inesperado en el método crear de la clase UsuarioPostgresqlDAO. Por favor, verifica la traza completa del error.";
+            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
         }
     }
 
     @Override
     public List<UsuarioEntity> read(UsuarioEntity entity) {
-        List<UsuarioEntity> result = new ArrayList<>();
-        
-        return result;
+        var sqlStatement = new StringBuilder();
+        var parameters = new ArrayList<>();
+
+        sqlStatement.append(prepareSelect());
+        sqlStatement.append(prepareFrom());
+        sqlStatement.append(prepareWhere(entity, parameters));
+        sqlStatement.append(prepareOrderBy());
+
+        try (var preparedStatement = getConnection().prepareStatement(sqlStatement.toString())) {
+
+        } catch (SQLException exception) {
+
+        } catch (Exception exception) {
+
+        }
+
+        return null;
     }
     
+    
+    @Override
+    public void update(UsuarioEntity entity) {
+        var sqlStatement = "UPDATE Usuario SET tipo_usuario = ?, nombre = ?, tipo_identificacion = ?, " +
+                "identificacion = ?, correo_institucional = ? WHERE identificador = ?";
+
+        try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
+            preparedStatement.setObject(1, entity.getTipoUsuario());
+            preparedStatement.setString(2, entity.getNombre());
+            preparedStatement.setObject(3, entity.getTipoIdentificacion());
+            preparedStatement.setString(4, entity.getIdentificacion());
+            preparedStatement.setString(5, entity.getCorreoInstitucional());
+            preparedStatement.setObject(6, entity.getIdentificador());
+
+            preparedStatement.executeUpdate();
+        } catch (final SQLException exception) {
+            var mensajeUsuario = "Se ha producido un problema al intentar modificar el usuario";
+            var mensajeTecnico = "Se ha producido un problema de tipo SQLException en el método modificar de la clase UsuarioPostgresqlDAO. Por favor, verifica la traza completa del error";
+
+            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
+        } catch (final Exception exception) {
+            var mensajeUsuario = "Se ha producido un problema inesperado al intentar modificar el usuario";
+            var mensajeTecnico = "Se ha producido un problema inesperado en el método modificar de la clase UsuarioPostgresqlDAO. Por favor, verifica la traza completa del error";
+            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
+        }
+    }
+
     @Override
     public void delete(UsuarioEntity entity) {
-        String query = "DELETE FROM usuario WHERE identificador = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setObject(1, entity.getIdentificador());
+        var sqlStatement = "DELETE FROM Usuario WHERE identificador = ?";
 
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            //excepcion
+        try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
+            preparedStatement.setObject(1, entity.getIdentificador());
+
+            preparedStatement.executeUpdate();
+        } catch (final SQLException exception) {
+            var mensajeUsuario = "Se ha producido un problema al intentar eliminar el usuario";
+            var mensajeTecnico = "Se ha producido un problema de tipo SQLException en el método eliminar de la clase UsuarioPostgresqlDAO. Por favor, verifica la traza completa del error";
+
+            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
+        } catch (final Exception exception) {
+            var mensajeUsuario = "Se ha producido un problema inesperado al intentar eliminar el usuario";
+            var mensajeTecnico = "Se ha producido un problema inesperado en el método eliminar de la clase UsuarioPostgresqlDAO. Por favor, verifica la traza completa del error";
+            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
         }
+    }
+
+    @Override
+    protected String prepareSelect() {
+        return "SELECT identificador, tipo_usuario, nombre, tipo_identificacion, identificacion, correo_institucional ";
+    }
+
+    @Override
+    protected String prepareFrom() {
+        return "FROM Usuario";
+    }
+    @Override
+    protected String prepareWhere(final UsuarioEntity entity, List<Object> parameters) {
+        final var where = new StringBuilder("");
+        parameters = UtilObject.getDefault(parameters, new ArrayList<>());
+
+        var setWhere = true;
+
+        if (!UtilObject.isNull(entity)) {
+
+            if (!UtilUUID.isDefault(entity.getIdentificador())) {
+                parameters.add(entity.getIdentificador());
+                where.append("WHERE identificador = ? ");
+                setWhere = false;
+            }
+
+            if (!UtilObject.isNull(entity.getTipoUsuario())) {
+                parameters.add(entity.getTipoUsuario());
+                where.append(setWhere ? "WHERE " : "AND ").append("tipo_usuario = ? ");
+                setWhere = false;
+            }
+
+            if (!UtilText.getUtilText().isEmpty(entity.getNombre())) {
+                parameters.add(entity.getNombre());
+                where.append(setWhere ? "WHERE " : "AND ").append("nombre = ? ");
+                setWhere = false;
+            }
+
+            if (!UtilObject.isNull(entity.getTipoIdentificacion())) {
+                parameters.add(entity.getTipoIdentificacion());
+                where.append(setWhere ? "WHERE " : "AND ").append("tipo_identificacion = ? ");
+                setWhere = false;
+            }
+
+            if (!UtilText.getUtilText().isEmpty(entity.getIdentificacion())) {
+                parameters.add(entity.getIdentificacion());
+                where.append(setWhere ? "WHERE " : "AND ").append("identificacion = ? ");
+                setWhere = false;
+            }
+
+            if (!UtilText.getUtilText().isEmpty(entity.getCorreoInstitucional())) {
+                parameters.add(entity.getCorreoInstitucional());
+                where.append(setWhere ? "WHERE " : "AND ").append("correo_institucional = ? ");
+                setWhere = false;
+            }
+        }
+
+        return where.toString();
+    }
+
+    @Override
+    protected String prepareOrderBy() {
+        return "ORDER BY nombre ASC";
     }
 }

@@ -46,7 +46,7 @@ public final class EstadoEquipoComputoPostgresqlDAO implements EstadoEquipoCompu
         UtilSql.abrirConexion();
 
         try {
-            Connection connection = UtilSql.conexion;
+            Connection connection = UtilSql.connection;
 
             EstadoEquipoComputoPostgresqlDAO estadoEquipoComputoPostgresqlDAO = new EstadoEquipoComputoPostgresqlDAO(connection);
 
