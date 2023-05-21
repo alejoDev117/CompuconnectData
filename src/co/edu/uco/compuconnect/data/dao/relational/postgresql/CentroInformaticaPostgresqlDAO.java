@@ -23,7 +23,7 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 
     @Override
     public void create(CentroInformaticaEntity entity) {
-        var sqlStament = "INSERT INTO CentroInformatica (identificador, nombre, ubicacion, posee_video_beam) VALUES (?, ?, ?, ?)";
+        var sqlStament = "INSERT INTO CentroInformatica (identificador, nombre, ubicacion, poseeVideoBeam) VALUES (?, ?, ?, ?)";
 
         try (var preparedStament = getConnection().prepareStatement(sqlStament)) {
             preparedStament.setObject(1, entity.getIdentificador());
@@ -68,7 +68,7 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 
     @Override
     public void update(CentroInformaticaEntity entity) {
-        var sqlStament = "UPDATE CentroInformatica SET nombre = ?, ubicacion = ?, posee_video_beam = ? WHERE identificador = ?";
+        var sqlStament = "UPDATE CentroInformatica SET nombre = ?, ubicacion = ?, poseeVideoBeam = ? WHERE identificador = ?";
 
         try (var preparedStament = getConnection().prepareStatement(sqlStament)) {
         	preparedStament.setString(1, entity.getNombre());
