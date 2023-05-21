@@ -97,31 +97,32 @@ public final class PostgresqlDAOFactory extends DAOFactory {
 	
 	@Override
 	protected void abrirConexion() {
-		// TODO Auto-generated method stub
+		UtilSql.abrirConexion(connection);
 		
 	}
 
 	@Override
 	public void cerrarConexion() {
+		UtilSql.cerrarConexion(connection);
 	
 		
 	}
 
 	@Override
 	public void iniciarTransaccion() {
-		// TODO Auto-generated method stub
+		UtilSql.iniciarTransaccion(connection);
 		
 	}
 
 	@Override
 	public void confirmarTransaccion() {
-		// TODO Auto-generated method stub
+		UtilSql.confirmarTransaccion(connection);
 		
 	}
 
 	@Override
 	public void cancelarTransaccion() {
-		// TODO Auto-generated method stub
+		UtilSql.cancelarTransaccion(connection);
 		
 	}
 
