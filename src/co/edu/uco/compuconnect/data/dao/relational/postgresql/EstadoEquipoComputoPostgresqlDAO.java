@@ -1,6 +1,7 @@
 package co.edu.uco.compuconnect.data.dao.relational.postgresql;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -42,20 +43,6 @@ public final class EstadoEquipoComputoPostgresqlDAO implements EstadoEquipoCompu
         return estadoList;
     }
     
-    public static void main(String[] args) {
-        UtilSql.abrirConexion();
-
-        try {
-            Connection connection = UtilSql.connection;
-
-            EstadoEquipoComputoPostgresqlDAO estadoEquipoComputoPostgresqlDAO = new EstadoEquipoComputoPostgresqlDAO(connection);
-
-            EstadoEquipoComputoEntity estadoEquipo = new EstadoEquipoComputoEntity(UUID.randomUUID(),"Activo","El estado está activo");
-      
-            estadoEquipoComputoPostgresqlDAO.create(estadoEquipo);
-            System.out.println("Creado correctamente");
-        } finally {
-            UtilSql.cerrarConexion();
-        }
-    }
+	
 }   
+

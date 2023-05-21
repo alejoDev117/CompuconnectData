@@ -1,5 +1,6 @@
 package co.edu.uco.compuconnect.data.dao.factory;
 
+import co.edu.uco.compuconnect.crosscutting.utils.Messages.DAOFactoryMessage;
 import co.edu.uco.compuconnect.data.dao.AgendaDAO;
 import co.edu.uco.compuconnect.data.dao.AgendaReservaDAO;
 import co.edu.uco.compuconnect.data.dao.BuzonSolicitudDAO;
@@ -56,7 +57,7 @@ public abstract class DAOFactory {
 			break;
 		}
 		default:
-			throw new IllegalArgumentException("No implements Yet!");
+			throw new IllegalArgumentException(DAOFactoryMessage.DATA_BASE_NO_IMPLEMENT_EXCEPTION);
 		}
 		
 		return daoFactory;
