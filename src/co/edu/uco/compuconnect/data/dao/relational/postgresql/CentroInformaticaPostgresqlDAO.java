@@ -34,8 +34,8 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
             preparedStament.executeUpdate();
 
         }catch (final SQLException exception) {
-			var userMessage = "Se ha presentado un problema tratando de registrar la informacion del nuevo estado tipo relacion institucion";
-			var technicalMessage ="Se ha presentado un problema de tipo SQLException dentro del metodo create de la clase EstadoTipoRelacionInstitucionSqlServerDAO, Por favor verifique la traza completa del error";
+			var userMessage = "se ha presentado un error tratando de registrar la informacion de un nuevo centro informatica....";
+			var technicalMessage ="Se ha presentado un problema de tipo SQLException dentro del metodo create de la clase CentroInformaticaPostgresqlDAO, Por favor verifique la traza completa del error";
 			
 			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
 		}catch (final Exception exception) {
