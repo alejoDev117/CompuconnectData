@@ -1,8 +1,11 @@
 package co.edu.uco.compuconnect.data.dao.factory.retational.postgresql;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 
+import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilSql;
+import co.edu.uco.compuconnect.crosscutting.utils.Messages.UtilSqlMessage;
 import co.edu.uco.compuconnect.data.dao.AgendaDAO;
 import co.edu.uco.compuconnect.data.dao.AgendaReservaDAO;
 import co.edu.uco.compuconnect.data.dao.BuzonSolicitudDAO;
@@ -97,7 +100,22 @@ public final class PostgresqlDAOFactory extends DAOFactory {
 	
 	@Override
 	protected void abrirConexion() {
-		UtilSql.abrirConexion(connection);
+        try {
+        	connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/Compuconnect", "postgres", "admin");
+            UtilSql.connectionIsOpen(connection);
+        } catch (final IllegalArgumentException exception) {
+            var userMessage = UtilSqlMessage.CONNECTION_IS_OPEN_USER_MESSAGE;
+            var technicalMessage = UtilSqlMessage.CONNECTION_IS_OPEN_TECHNICAL_ILEGAL_ARGUMENT_EXCEPTION;
+            throw CompuconnectDataException.create(userMessage, technicalMessage, exception);
+        } catch (final NullPointerException exception) {
+            var userMessage = UtilSqlMessage.CONNECTION_IS_OPEN_USER_MESSAGE;
+            var technicalMessage = UtilSqlMessage.CONNECTION_IS_OPEN_TECHNICAL_NULL_POINTER_EXCEPTION;
+            throw CompuconnectDataException.create(userMessage, technicalMessage, exception);
+        } catch (final Exception exception) {
+            var userMessage = UtilSqlMessage.CONNECTION_IS_OPEN_USER_MESSAGE;
+            var technicalMessage = UtilSqlMessage.CONNECTION_IS_OPEN_TECHNICAL_EXCEPTION;
+            throw CompuconnectDataException.create(userMessage, technicalMessage, exception);
+        }
 		
 	}
 
