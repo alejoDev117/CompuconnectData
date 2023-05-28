@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilBoolean;
@@ -23,7 +24,7 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 
     @Override
     public void create(CentroInformaticaEntity entity) {
-        var sqlStament = "INSERT INTO CentroInformatica (identificador, nombre, ubicacion, poseeVideoBeam) VALUES (?, ?, ?, ?)";
+        var sqlStament = "INSERT INTO \"CentroInformatica\" (identificador, nombre, ubicacion, \"poseeVideoBeam\") VALUES (?, ?, ?, ?)";
 
         try (var preparedStament = getConnection().prepareStatement(sqlStament)) {
             preparedStament.setObject(1, entity.getIdentificador());
@@ -47,28 +48,22 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 
     @Override
     public List<CentroInformaticaEntity> read(CentroInformaticaEntity entity) {
-    	var sqlStatement = new StringBuilder();
-		var parameters = new ArrayList<>();
-		
-		sqlStatement.append(prepareSelect());
-		sqlStatement.append(prepareFrom());
-		sqlStatement.append(prepareWhere(entity, parameters));
-		sqlStatement.append(prepareOrderBy());
-		
-		try (var preparedStament = getConnection().prepareStatement(sqlStatement.toString())){
-			
-		} catch (SQLException exception) {
-			
-		} catch (Exception exception) {
-			
-		}
-		
-		return null;
+        var sqlStatement = new StringBuilder();
+        var parameters = new ArrayList<Object>();
+        List<CentroInformaticaEntity> entities = new ArrayList<>();
+
+        sqlStatement.append(prepareSelect());
+        sqlStatement.append(prepareFrom());
+        sqlStatement.append(prepareWhere(entity, parameters));
+        sqlStatement.append(prepareOrderBy());
+
+        return entities;
     }
+
 
     @Override
     public void update(CentroInformaticaEntity entity) {
-        var sqlStament = "UPDATE CentroInformatica SET nombre = ?, ubicacion = ?, poseeVideoBeam = ? WHERE identificador = ?";
+        var sqlStament = "UPDATE \"CentroInformatica\" SET nombre = ?, ubicacion = ?, \"poseeVideoBeam\" = ? WHERE identificador = ?";
 
         try (var preparedStament = getConnection().prepareStatement(sqlStament)) {
         	preparedStament.setString(1, entity.getNombre());
@@ -79,12 +74,12 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
             preparedStament.executeUpdate();
         }catch (final SQLException exception) {
 			var userMessage = "Se ha presentado un problema tratando de modificar la informacion del nuevo estado tipo relacion institucion";
-			var technicalMessage ="Se ha presentado un problema de tipo SQLException dentro del metodo update de la clase EstadoTipoRelacionInstitucionSqlServerDAO, Por favor verifique la traza completa del error";
+			var technicalMessage ="Se ha presentado un problema de tipo SQLException dentro del metodo update de la clase CentroInformatica, Por favor verifique la traza completa del error";
 			
 			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
 		}catch (final Exception exception) {
 			var userMessage = "Se ha presentado un problema inesperado tratando de mofificar la informacion del nuevo estado tipo relacion institucion";
-			var technicalMessage ="Se ha presentado un problema inesperado dentro del metodo update de la clase EstadoTipoRelacionInstitucionSqlServerDAO, Por favor verifique la traza completa del error";
+			var technicalMessage ="Se ha presentado un problema inesperado dentro del metodo update de la clase CentroInformatica, Por favor verifique la traza completa del error";
 			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
 		}
     }

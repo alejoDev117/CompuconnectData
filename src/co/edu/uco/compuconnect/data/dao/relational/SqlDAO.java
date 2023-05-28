@@ -34,6 +34,7 @@ public abstract class SqlDAO<E> {
 	protected abstract String prepareWhere(E entity, List<Object> parameters);
 	
 	protected abstract String prepareOrderBy();
+	
 
 }
 

@@ -133,6 +133,6 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 	protected String prepareOrderBy() {
 		return "ORDER BY nombre ASC";
 	}
-
+	
 
 }

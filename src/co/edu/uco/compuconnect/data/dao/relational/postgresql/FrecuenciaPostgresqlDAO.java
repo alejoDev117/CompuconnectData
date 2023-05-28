@@ -10,9 +10,9 @@ import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException
 import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilText;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilUUID;
+import co.edu.uco.compuconnect.crosscutting.utils.Messages.FrecuenciaPostgresqlDAOMessage;
 import co.edu.uco.compuconnect.data.dao.FrecuenciaDAO;
 import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
-import co.edu.uco.compuconnect.entities.CentroInformaticaEntity;
 import co.edu.uco.compuconnect.entities.FrecuenciaEntity;
 
 public final class FrecuenciaPostgresqlDAO extends SqlDAO<FrecuenciaEntity> implements FrecuenciaDAO {
@@ -33,14 +33,10 @@ public final class FrecuenciaPostgresqlDAO extends SqlDAO<FrecuenciaEntity> impl
             preparedStatement.executeUpdate();
 
         } catch (final SQLException exception) {
-            var mensajeUsuario = "Se ha producido un problema al intentar registrar la información de la nueva frecuencia";
-            var mensajeTecnico = "Se ha producido un problema de tipo SQLException en el método create de la clase FrecuenciaPostgresqlDAO. Por favor, verifica la traza completa del error.";
-
-            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
-        } catch (final Exception exception) {
-            var messageUser = "Se ha producido un problema inesperado al intentar registrar la información de la nueva frecuencia";
-            var messageTecnh = "Se ha producido un problema inesperado en el método create de la clase FrecuenciaPostgresqlDAO. Por favor, verifica la traza completa del error.";
-            throw CompuconnectDataException.create(messageUser, messageTecnh, exception);
+        	throw CompuconnectDataException.create(FrecuenciaPostgresqlDAOMessage.CREATE_SQL_EXCEPTION_TECHNICAL_MESSAGE, FrecuenciaPostgresqlDAOMessage.CREATE_SQL_EXCEPTION_USER_MESSAGE,exception);
+        	
+        }catch(final Exception exception) {
+        	throw CompuconnectDataException.create(FrecuenciaPostgresqlDAOMessage.CREATE_EXCEPTION_TECHNICAL_MESSAGE, FrecuenciaPostgresqlDAOMessage.CREATE_EXCEPTION_USER_MESSAGE,exception);
         }
     }
 

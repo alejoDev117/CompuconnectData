@@ -10,6 +10,8 @@ import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException
 import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilText;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilUUID;
+import co.edu.uco.compuconnect.crosscutting.utils.Messages.AgendaPostgresqlDAOMessage;
+import co.edu.uco.compuconnect.crosscutting.utils.Messages.ReservaPostgresqlDAOMessage;
 import co.edu.uco.compuconnect.data.dao.ReservaDAO;
 import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
 import co.edu.uco.compuconnect.entities.ReservaEntity;
@@ -40,14 +42,10 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
             preparedStatement.executeUpdate();
 
         } catch (final SQLException exception) {
-            var mensajeUsuario = "Se ha producido un problema al intentar generar la reserva";
-            var mensajeTecnico = "Se ha producido un problema de tipo SQLException en el método generar de la clase ReservaPostgresqlDAO. Por favor, verifica la traza completa del error.";
-
-            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
-        } catch (final Exception exception) {
-            var mensajeUsuario = "Se ha producido un problema inesperado al intentar generar la reserva";
-            var mensajeTecnico = "Se ha producido un problema inesperado en el método generar de la clase ReservaPostgresqlDAO. Por favor, verifica la traza completa del error.";
-            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
+        	throw CompuconnectDataException.create(ReservaPostgresqlDAOMessage.CREATE_SQL_EXCEPTION_TECHNICAL_MESSAGE, ReservaPostgresqlDAOMessage.CREATE_SQL_EXCEPTION_USER_MESSAGE,exception);
+        	
+        }catch(final Exception exception) {
+        	throw CompuconnectDataException.create(ReservaPostgresqlDAOMessage.CREATE_EXCEPTION_TECHNICAL_MESSAGE, ReservaPostgresqlDAOMessage.CREATE_EXCEPTION_USER_MESSAGE,exception);
         }
     }
 
@@ -59,15 +57,10 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
             preparedStatement.setObject(1, entity.getIdentificador());
 
             preparedStatement.executeUpdate();
-        } catch (final SQLException exception) {
-            var mensajeUsuario = "Se ha producido un problema al intentar cancelar la reserva";
-            var mensajeTecnico = "Se ha producido un problema de tipo SQLException en el método cancelar de la clase ReservaPostgresqlDAO. Por favor, verifica la traza completa del error";
-
-            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
-        } catch (final Exception exception) {
-            var mensajeUsuario = "Se ha producido un problema inesperado al intentar cancelar la reserva";
-            var mensajeTecnico = "Se ha producido un problema inesperado en el método cancelar de la clase ReservaPostgresqlDAO. Por favor, verifica la traza completa del error";
-            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
+        } catch (SQLException exception) {
+        	throw CompuconnectDataException.create(ReservaPostgresqlDAOMessage.DELETE_SQL_EXCEPTION_TECHNICAL_MESSAGE, ReservaPostgresqlDAOMessage.DELETE_SQL_EXCEPTION_USER_MESSAGE, exception);
+        }catch(Exception exception) {
+        	throw CompuconnectDataException.create(ReservaPostgresqlDAOMessage.DELETE_EXCEPTION_TECHNICAL_MESSAGE, ReservaPostgresqlDAOMessage.DELETE_EXCEPTION_USER_MESSAGE, exception);
         }
     }
     
@@ -109,15 +102,10 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
             preparedStatement.setObject(9, entity.getIdentificador());
 
             preparedStatement.executeUpdate();
-        } catch (final SQLException exception) {
-            var mensajeUsuario = "Se ha producido un problema al intentar modificar la reserva";
-            var mensajeTecnico = "Se ha producido un problema de tipo SQLException en el método modificar de la clase ReservaPostgresqlDAO. Por favor, verifica la traza completa del error";
-
-            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
-        } catch (final Exception exception) {
-            var mensajeUsuario = "Se ha producido un problema inesperado al intentar modificar la reserva";
-            var mensajeTecnico = "Se ha producido un problema inesperado en el método modificar de la clase ReservaPostgresqlDAO. Por favor, verifica la traza completa del error";
-            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
+        } catch (SQLException exception) {
+        	throw CompuconnectDataException.create(ReservaPostgresqlDAOMessage.UPDATE_SQL_EXCEPTION_TECHNICAL_MESSAGE, ReservaPostgresqlDAOMessage.UPDATE_SQL_EXCEPTION_USER_MESSAGE, exception);
+        }catch(Exception exception) {
+        	throw CompuconnectDataException.create(ReservaPostgresqlDAOMessage.UPDATE_EXCEPTION_TECHNICAL_MESSAGE, ReservaPostgresqlDAOMessage.UPDATE_EXCEPTION_USER_MESSAGE, exception);
         }
     }
     

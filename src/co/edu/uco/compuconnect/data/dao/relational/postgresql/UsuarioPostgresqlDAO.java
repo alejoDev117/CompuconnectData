@@ -1,7 +1,6 @@
 package co.edu.uco.compuconnect.data.dao.relational.postgresql;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +9,7 @@ import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException
 import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilText;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilUUID;
+import co.edu.uco.compuconnect.crosscutting.utils.Messages.UsuarioPostgresqlDAOMessage;
 import co.edu.uco.compuconnect.data.dao.UsuarioDAO;
 import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
 import co.edu.uco.compuconnect.entities.UsuarioEntity;
@@ -36,14 +36,10 @@ public final class UsuarioPostgresqlDAO extends SqlDAO<UsuarioEntity> implements
             preparedStatement.executeUpdate();
 
         } catch (final SQLException exception) {
-            var mensajeUsuario = "Se ha producido un problema al intentar crear el usuario";
-            var mensajeTecnico = "Se ha producido un problema de tipo SQLException en el método crear de la clase UsuarioPostgresqlDAO. Por favor, verifica la traza completa del error.";
-
-            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
-        } catch (final Exception exception) {
-            var mensajeUsuario = "Se ha producido un problema inesperado al intentar crear el usuario";
-            var mensajeTecnico = "Se ha producido un problema inesperado en el método crear de la clase UsuarioPostgresqlDAO. Por favor, verifica la traza completa del error.";
-            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
+        	throw CompuconnectDataException.create(UsuarioPostgresqlDAOMessage.CREATE_SQL_EXCEPTION_TECHNICAL_MESSAGE, UsuarioPostgresqlDAOMessage.CREATE_SQL_EXCEPTION_USER_MESSAGE,exception);
+        	
+        }catch(final Exception exception) {
+        	throw CompuconnectDataException.create(UsuarioPostgresqlDAOMessage.CREATE_EXCEPTION_TECHNICAL_MESSAGE, UsuarioPostgresqlDAOMessage.CREATE_EXCEPTION_USER_MESSAGE,exception);
         }
     }
 
@@ -83,15 +79,10 @@ public final class UsuarioPostgresqlDAO extends SqlDAO<UsuarioEntity> implements
             preparedStatement.setObject(6, entity.getIdentificador());
 
             preparedStatement.executeUpdate();
-        } catch (final SQLException exception) {
-            var mensajeUsuario = "Se ha producido un problema al intentar modificar el usuario";
-            var mensajeTecnico = "Se ha producido un problema de tipo SQLException en el método modificar de la clase UsuarioPostgresqlDAO. Por favor, verifica la traza completa del error";
-
-            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
-        } catch (final Exception exception) {
-            var mensajeUsuario = "Se ha producido un problema inesperado al intentar modificar el usuario";
-            var mensajeTecnico = "Se ha producido un problema inesperado en el método modificar de la clase UsuarioPostgresqlDAO. Por favor, verifica la traza completa del error";
-            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
+        } catch (SQLException exception) {
+        	throw CompuconnectDataException.create(UsuarioPostgresqlDAOMessage.UPDATE_SQL_EXCEPTION_TECHNICAL_MESSAGE, UsuarioPostgresqlDAOMessage.UPDATE_SQL_EXCEPTION_USER_MESSAGE, exception);
+        }catch(Exception exception) {
+        	throw CompuconnectDataException.create(UsuarioPostgresqlDAOMessage.UPDATE_EXCEPTION_TECHNICAL_MESSAGE, UsuarioPostgresqlDAOMessage.UPDATE_EXCEPTION_USER_MESSAGE, exception);
         }
     }
 
@@ -103,15 +94,10 @@ public final class UsuarioPostgresqlDAO extends SqlDAO<UsuarioEntity> implements
             preparedStatement.setObject(1, entity.getIdentificador());
 
             preparedStatement.executeUpdate();
-        } catch (final SQLException exception) {
-            var mensajeUsuario = "Se ha producido un problema al intentar eliminar el usuario";
-            var mensajeTecnico = "Se ha producido un problema de tipo SQLException en el método eliminar de la clase UsuarioPostgresqlDAO. Por favor, verifica la traza completa del error";
-
-            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
-        } catch (final Exception exception) {
-            var mensajeUsuario = "Se ha producido un problema inesperado al intentar eliminar el usuario";
-            var mensajeTecnico = "Se ha producido un problema inesperado en el método eliminar de la clase UsuarioPostgresqlDAO. Por favor, verifica la traza completa del error";
-            throw CompuconnectDataException.create(mensajeTecnico, mensajeUsuario, exception);
+        } catch (SQLException exception) {
+        	throw CompuconnectDataException.create(UsuarioPostgresqlDAOMessage.DELETE_SQL_EXCEPTION_TECHNICAL_MESSAGE, UsuarioPostgresqlDAOMessage.DELETE_SQL_EXCEPTION_USER_MESSAGE, exception);
+        }catch(Exception exception) {
+        	throw CompuconnectDataException.create(UsuarioPostgresqlDAOMessage.DELETE_EXCEPTION_TECHNICAL_MESSAGE, UsuarioPostgresqlDAOMessage.DELETE_EXCEPTION_USER_MESSAGE, exception);
         }
     }
 
