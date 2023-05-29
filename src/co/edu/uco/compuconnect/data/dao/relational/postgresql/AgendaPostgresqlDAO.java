@@ -2,11 +2,9 @@ package co.edu.uco.compuconnect.data.dao.relational.postgresql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
@@ -15,7 +13,6 @@ import co.edu.uco.compuconnect.crosscutting.utils.Messages.AgendaPostgresqlDAOMe
 import co.edu.uco.compuconnect.data.dao.AgendaDAO;
 import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
 import co.edu.uco.compuconnect.entities.AgendaEntity;
-import co.edu.uco.compuconnect.entities.PeriodoFuncionamientoEntity;
 
 public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  AgendaDAO {
 

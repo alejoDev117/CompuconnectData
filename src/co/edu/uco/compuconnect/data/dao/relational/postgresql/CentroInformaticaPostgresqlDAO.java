@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.UUID;
 
 import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
-import co.edu.uco.compuconnect.crosscutting.utils.UtilBoolean;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilText;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilUUID;
+import co.edu.uco.compuconnect.crosscutting.utils.Messages.CentroInformaticaPostgresqlDAOMessage;
 import co.edu.uco.compuconnect.data.dao.CentroInformaticaDAO;
 import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
 import co.edu.uco.compuconnect.entities.CentroInformaticaEntity;
@@ -34,16 +34,12 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 
             preparedStament.executeUpdate();
 
-        }catch (final SQLException exception) {
-			var userMessage = "se ha presentado un error tratando de registrar la informacion de un nuevo centro informatica....";
-			var technicalMessage ="Se ha presentado un problema de tipo SQLException dentro del metodo create de la clase CentroInformaticaPostgresqlDAO, Por favor verifique la traza completa del error";
-			
-			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
-		}catch (final Exception exception) {
-			var userMessage = "Se ha presentado un problema inesperado tratando de registrar la informacion del nuevo estado tipo relacion institucion";
-			var technicalMessage ="Se ha presentado un problema inesperado dentro del metodo create de la clase EstadoTipoRelacionInstitucionSqlServerDAO, Por favor verifique la traza completa del error";
-			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
-		}
+        } catch (final SQLException exception) {
+        	throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.CREATE_SQL_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.CREATE_SQL_EXCEPTION_USER_MESSAGE,exception);
+        	
+        }catch(final Exception exception) {
+        	throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.CREATE_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.CREATE_EXCEPTION_USER_MESSAGE,exception);
+        }
     }
 
     @Override
@@ -56,6 +52,23 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
         sqlStatement.append(prepareFrom());
         sqlStatement.append(prepareWhere(entity, parameters));
         sqlStatement.append(prepareOrderBy());
+
+        try (var preparedStatement = getConnection().prepareStatement(sqlStatement.toString())) {
+            setParameters(preparedStatement, parameters);
+
+            try (var resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    CentroInformaticaEntity centro = new CentroInformaticaEntity(resultSet.getObject("identificador", UUID.class),
+                            resultSet.getString("nombre"), resultSet.getString("ubicacion"), resultSet.getBoolean("\"poseeVideoBeam\""));
+                    entities.add(centro);
+                }
+            }
+
+        } catch (SQLException exception) {
+            throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.READ_SQL_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.READ_SQL_EXCEPTION_USER_MESSAGE, exception);
+        } catch (Exception exception) {
+            throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.READ_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.READ_EXCEPTION_USER_MESSAGE, exception);
+        }
 
         return entities;
     }
@@ -72,46 +85,36 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
         	preparedStament.setObject(4, entity.getIdentificador());
 
             preparedStament.executeUpdate();
-        }catch (final SQLException exception) {
-			var userMessage = "Se ha presentado un problema tratando de modificar la informacion del nuevo estado tipo relacion institucion";
-			var technicalMessage ="Se ha presentado un problema de tipo SQLException dentro del metodo update de la clase CentroInformatica, Por favor verifique la traza completa del error";
-			
-			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
-		}catch (final Exception exception) {
-			var userMessage = "Se ha presentado un problema inesperado tratando de mofificar la informacion del nuevo estado tipo relacion institucion";
-			var technicalMessage ="Se ha presentado un problema inesperado dentro del metodo update de la clase CentroInformatica, Por favor verifique la traza completa del error";
-			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
-		}
+        } catch (SQLException exception) {
+        	throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.UPDATE_SQL_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.UPDATE_SQL_EXCEPTION_USER_MESSAGE, exception);
+        }catch(Exception exception) {
+        	throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.UPDATE_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.UPDATE_EXCEPTION_USER_MESSAGE, exception);
+        }
     }
 
     @Override
     public void delete(CentroInformaticaEntity entity) {
-    	var sqlStament = "DELETE FROM EstadoTipoRelacionInstitucion WHERE identificador=?)";
-
-		try (var preparedStatement = getConnection().prepareStatement(sqlStament)) {
-			preparedStatement.setObject(1, entity.getIdentificador());
-			
-			preparedStatement.executeUpdate();
-		}catch (final SQLException exception) {
-			var userMessage = "Se ha presentado un problema tratando de eliminar la informacion del nuevo estado tipo relacion institucion";
-			var technicalMessage ="Se ha presentado un problema de tipo SQLException dentro del metodo delete de la clase EstadoTipoRelacionInstitucionSqlServerDAO, Por favor verifique la traza completa del error";
-			
-			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
-		}catch (final Exception exception) {
-			var userMessage = "Se ha presentado un problema inesperado tratando de eliminar la informacion del nuevo estado tipo relacion institucion";
-			var technicalMessage ="Se ha presentado un problema inesperado dentro del metodo delete de la clase EstadoTipoRelacionInstitucionSqlServerDAO, Por favor verifique la traza completa del error";
-			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
-		}
+        var sqlStatement = "DELETE FROM \"CentroInformatica\" WHERE identificador=?";
+        
+        try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
+            preparedStatement.setObject(1, entity.getIdentificador());
+            preparedStatement.executeUpdate();
+        } catch (SQLException exception) {
+        	throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.DELETE_SQL_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.DELETE_SQL_EXCEPTION_USER_MESSAGE, exception);
+        }catch(Exception exception) {
+        	throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.DELETE_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.DELETE_EXCEPTION_USER_MESSAGE, exception);
+        }
     }
+
 
 	@Override
 	protected String prepareSelect() {
-		return "SELECT identificador, nombre, ubicacion, poseeVideoBeam ";
+		return "SELECT identificador, nombre, ubicacion, \"poseeVideoBeam\"";
 	}
 
 	@Override
 	protected String prepareFrom() {
-		return "FROM CentroInformatica";
+		return "FROM \"CentroInformatica\"";
 	}
 
 	@Override
@@ -148,4 +151,11 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 	protected String prepareOrderBy() {
 		return  "ORDER BY nombre ASC";
 	}
+	
+	 private void setParameters(PreparedStatement preparedStatement, List<Object> parameters) throws SQLException {
+	        for (int i = 0; i < parameters.size(); i++) {
+	            Object parameter = parameters.get(i);
+	            preparedStatement.setObject(i + 1, parameter);
+	        }
+	    }
 }
