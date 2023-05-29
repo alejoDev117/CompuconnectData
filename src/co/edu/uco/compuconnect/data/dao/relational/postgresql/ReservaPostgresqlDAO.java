@@ -25,15 +25,15 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
 
     @Override
     public void create(ReservaEntity entity) {
-        var sqlStatement = "INSERT INTO Reserva (identificador, autor, tipo, fecha_inicio, fecha_fin, frecuencia, centro_informatica, descripcion, hora_creacion) " +
+        var sqlStatement = "INSERT INTO reserva (identificador, autor, tipo, fechaInicio, fechaFin, frecuencia, centroInformatica, descripcion, horaCreacion) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
             preparedStatement.setObject(1, entity.getIdentificador());
             preparedStatement.setObject(2, entity.getAutor().getIdentificador());
             preparedStatement.setString(3, entity.getTipoReserva().toString());
-            preparedStatement.setDate(4, new java.sql.Date(entity.getFechaInicio().getTime()));
-            preparedStatement.setDate(5, new java.sql.Date(entity.getFechaFin().getTime()));
+            preparedStatement.setObject(4, entity.getFechaInicio());
+            preparedStatement.setObject(4, entity.getFechaFin());
             preparedStatement.setObject(6, entity.getFrecuencia().getIdentificador());
             preparedStatement.setObject(7, entity.getCentroInformatica().getIdentificador());
             preparedStatement.setString(8, entity.getDescripcion());
@@ -51,7 +51,7 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
 
     @Override
     public void delete(ReservaEntity entity) {
-        var sqlStatement = "DELETE FROM Reserva WHERE identificador = ?";
+        var sqlStatement = "DELETE FROM reserva WHERE identificador = ?";
 
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
             preparedStatement.setObject(1, entity.getIdentificador());
@@ -87,19 +87,15 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
 
     @Override
     public void update(ReservaEntity entity) {
-        var sqlStatement = "UPDATE Reserva SET autor = ?, tipo = ?, fecha_inicio = ?, fecha_fin = ?, frecuencia = ?, " +
-                "centro_informatica = ?, descripcion = ?, hora_creacion = ? WHERE identificador = ?";
+        var sqlStatement = "UPDATE reserva SET  fechaInicio = ?, fechaFin = ? " +
+                ", descripcion = ?  WHERE identificador = ?";
 
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
-            preparedStatement.setObject(1, entity.getAutor().getIdentificador());
-            preparedStatement.setString(2, entity.getTipoReserva().toString());
-            preparedStatement.setObject(3, entity.getFechaInicio().getTime());
-            preparedStatement.setObject(4, entity.getFechaFin().getTime());
-            preparedStatement.setObject(5, entity.getFrecuencia().getIdentificador());
-            preparedStatement.setObject(6, entity.getCentroInformatica().getIdentificador());
-            preparedStatement.setString(7, entity.getDescripcion());
-            preparedStatement.setObject(8, entity.getHoraCreacion().getTime());
-            preparedStatement.setObject(9, entity.getIdentificador());
+            preparedStatement.setObject(1, entity.getFechaInicio().getTime());
+            preparedStatement.setObject(2, entity.getFechaFin().getTime());
+            preparedStatement.setString(3, entity.getDescripcion());
+            preparedStatement.setObject(4, entity.getIdentificador());
+          
 
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
@@ -116,7 +112,7 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
 
     @Override
     protected String prepareFrom() {
-        return "FROM Reserva";
+        return "FROM reserva ";
     }
 
     @Override

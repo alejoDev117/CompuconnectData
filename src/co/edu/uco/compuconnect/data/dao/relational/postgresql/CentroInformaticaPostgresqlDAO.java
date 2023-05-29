@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
+import co.edu.uco.compuconnect.crosscutting.utils.Messages.CentroInformaticaPostgresqlDAOMessage;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilBoolean;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilText;
@@ -24,7 +25,7 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 
     @Override
     public void create(CentroInformaticaEntity entity) {
-        var sqlStament = "INSERT INTO \"CentroInformatica\" (identificador, nombre, ubicacion, \"poseeVideoBeam\") VALUES (?, ?, ?, ?)";
+        var sqlStament = "INSERT INTO \"centro_informatica\" (identificador, nombre, ubicacion, \"poseeVideoBeam\") VALUES (?, ?, ?, ?)";
 
         try (var preparedStament = getConnection().prepareStatement(sqlStament)) {
             preparedStament.setObject(1, entity.getIdentificador());
@@ -35,14 +36,10 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
             preparedStament.executeUpdate();
 
         }catch (final SQLException exception) {
-			var userMessage = "se ha presentado un error tratando de registrar la informacion de un nuevo centro informatica....";
-			var technicalMessage ="Se ha presentado un problema de tipo SQLException dentro del metodo create de la clase CentroInformaticaPostgresqlDAO, Por favor verifique la traza completa del error";
-			
-			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
+		
+        	throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.CREATE_SQL_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.CREATE_SQL_EXCEPTION_USER_MESSAGE, exception);
 		}catch (final Exception exception) {
-			var userMessage = "Se ha presentado un problema inesperado tratando de registrar la informacion del nuevo estado tipo relacion institucion";
-			var technicalMessage ="Se ha presentado un problema inesperado dentro del metodo create de la clase EstadoTipoRelacionInstitucionSqlServerDAO, Por favor verifique la traza completa del error";
-			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
+			throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.CREATE_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.CREATE_EXCEPTION_USER_MESSAGE, exception);
 		}
     }
 
@@ -63,7 +60,7 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 
     @Override
     public void update(CentroInformaticaEntity entity) {
-        var sqlStament = "UPDATE \"CentroInformatica\" SET nombre = ?, ubicacion = ?, \"poseeVideoBeam\" = ? WHERE identificador = ?";
+        var sqlStament = "UPDATE \"centro_informatica\" SET nombre = ?, ubicacion = ?, \"poseeVideoBeam\" = ? WHERE identificador = ?";
 
         try (var preparedStament = getConnection().prepareStatement(sqlStament)) {
         	preparedStament.setString(1, entity.getNombre());
@@ -73,34 +70,25 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 
             preparedStament.executeUpdate();
         }catch (final SQLException exception) {
-			var userMessage = "Se ha presentado un problema tratando de modificar la informacion del nuevo estado tipo relacion institucion";
-			var technicalMessage ="Se ha presentado un problema de tipo SQLException dentro del metodo update de la clase CentroInformatica, Por favor verifique la traza completa del error";
 			
-			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
-		}catch (final Exception exception) {
-			var userMessage = "Se ha presentado un problema inesperado tratando de mofificar la informacion del nuevo estado tipo relacion institucion";
-			var technicalMessage ="Se ha presentado un problema inesperado dentro del metodo update de la clase CentroInformatica, Por favor verifique la traza completa del error";
-			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
+			throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.UPDATE_SQL_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.UPDATE_SQL_EXCEPTION_USER_MESSAGE, exception);
+		}catch (final Exception exception) {	
+			throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.UPDATE_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.UPDATE_EXCEPTION_USER_MESSAGE, exception);
 		}
     }
 
     @Override
     public void delete(CentroInformaticaEntity entity) {
-    	var sqlStament = "DELETE FROM EstadoTipoRelacionInstitucion WHERE identificador=?)";
+    	var sqlStament = "DELETE FROM centro_informatica WHERE identificador=?)";
 
 		try (var preparedStatement = getConnection().prepareStatement(sqlStament)) {
 			preparedStatement.setObject(1, entity.getIdentificador());
 			
 			preparedStatement.executeUpdate();
-		}catch (final SQLException exception) {
-			var userMessage = "Se ha presentado un problema tratando de eliminar la informacion del nuevo estado tipo relacion institucion";
-			var technicalMessage ="Se ha presentado un problema de tipo SQLException dentro del metodo delete de la clase EstadoTipoRelacionInstitucionSqlServerDAO, Por favor verifique la traza completa del error";
-			
-			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
+		}catch (final SQLException exception) {		
+			throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.DELETE_SQL_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.DELETE_SQL_EXCEPTION_USER_MESSAGE, exception);
 		}catch (final Exception exception) {
-			var userMessage = "Se ha presentado un problema inesperado tratando de eliminar la informacion del nuevo estado tipo relacion institucion";
-			var technicalMessage ="Se ha presentado un problema inesperado dentro del metodo delete de la clase EstadoTipoRelacionInstitucionSqlServerDAO, Por favor verifique la traza completa del error";
-			throw CompuconnectDataException.create(technicalMessage, userMessage, exception);
+			throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.DELETE_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.DELETE_EXCEPTION_USER_MESSAGE, exception);
 		}
     }
 
@@ -111,7 +99,7 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 
 	@Override
 	protected String prepareFrom() {
-		return "FROM CentroInformatica";
+		return "FROM centro_informatica ";
 	}
 
 	@Override

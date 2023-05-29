@@ -23,7 +23,7 @@ public final class FrecuenciaPostgresqlDAO extends SqlDAO<FrecuenciaEntity> impl
 
     @Override
     public void create(FrecuenciaEntity entity) {
-        var sqlStatement = "INSERT INTO Frecuencia (identificador, nombre, descripcion) VALUES (?, ?, ?)";
+        var sqlStatement = "INSERT INTO frecuencia (identificador, nombre, descripcion) VALUES (?, ?, ?)";
 
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
             preparedStatement.setObject(1, entity.getIdentificador());
@@ -68,7 +68,7 @@ public final class FrecuenciaPostgresqlDAO extends SqlDAO<FrecuenciaEntity> impl
 
 	@Override
 	protected String prepareFrom() {
-		return "FROM Frecuencia";
+		return "FROM frecuencia";
 	}
 
 	@Override

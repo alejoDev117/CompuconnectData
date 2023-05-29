@@ -6,30 +6,37 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
+import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
+import co.edu.uco.compuconnect.crosscutting.utils.UtilUUID;
+import co.edu.uco.compuconnect.crosscutting.utils.Messages.BuzonSolicitudPostgresqlDAOMessage;
 import co.edu.uco.compuconnect.data.dao.BuzonSolicitudDAO;
+import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
 import co.edu.uco.compuconnect.entities.AgendaReservaEntity;
 import co.edu.uco.compuconnect.entities.BuzonSolicitudEntity;
 
-public final class BuzonSolicitudPostgresqlDAO implements BuzonSolicitudDAO {
+public final class BuzonSolicitudPostgresqlDAO extends SqlDAO<BuzonSolicitudEntity>  implements BuzonSolicitudDAO {
 
-    private final Connection connection;
+
 
     public BuzonSolicitudPostgresqlDAO(final Connection connection) {
-        this.connection = connection;
+        super(connection);
     }
 
     @Override
     public void create(BuzonSolicitudEntity entity) {
-        String sql = "INSERT INTO BuzonSolicitud (identificador, solicitud, respuesta) VALUES (?, ?, ?)";
+        String sqlStatement = "INSERT INTO buzon_solicitud (identificador, solicitud, respuesta) VALUES (?, ?, ?)";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement)) {
             statement.setObject(1, entity.getIdentificador());
-            statement.setObject(2, entity.getSolicitud());
-            statement.setObject(3, entity.getRespuesta());
+            statement.setObject(2, entity.getSolicitud().getIdentificador());
+            statement.setObject(3, entity.getRespuesta().getIdentificador());
 
             statement.executeUpdate();
-        } catch (SQLException e) {
-            //excepción
+        } catch (SQLException exception) {
+        	throw CompuconnectDataException.create(BuzonSolicitudPostgresqlDAOMessage.CREATE_SQL_EXCEPTION_TECHNICAL_MESSAGE, BuzonSolicitudPostgresqlDAOMessage.CREATE_SQL_EXCEPTION_USER_MESSAGE, exception);
+        }catch (Exception exception) {
+        	throw CompuconnectDataException.create(BuzonSolicitudPostgresqlDAOMessage.CREATE_EXCEPTION_TECHNICAL_MESSAGE, BuzonSolicitudPostgresqlDAOMessage.CREATE_EXCEPTION_USER_MESSAGE, exception);
         }
     }
 
@@ -42,28 +49,78 @@ public final class BuzonSolicitudPostgresqlDAO implements BuzonSolicitudDAO {
 
     @Override
     public void update(BuzonSolicitudEntity entity) {
-        String sql = "UPDATE BuzonSolicitud SET respuesta = ? WHERE solicitud = ?";
+        String sql = "UPDATE BuzonSolicitud SET respuesta =?,solicitud=? WHERE identificador=?";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setObject(2, entity.getRespuesta());
-            statement.setObject(3, entity.getSolicitud());
+        try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
+            statement.setObject(1, entity.getRespuesta().getIdentificador());
+            statement.setObject(2, entity.getSolicitud().getIdentificador());
+            statement.setObject(3, entity.getIdentificador());
 
             statement.executeUpdate();
-        } catch (SQLException e) {
-            //excepción
+        } catch (SQLException exception) {
+        	throw CompuconnectDataException.create(BuzonSolicitudPostgresqlDAOMessage.UPDATE_SQL_EXCEPTION_TECHNICAL_MESSAGE, BuzonSolicitudPostgresqlDAOMessage.UPDATE_SQL_EXCEPTION_USER_MESSAGE, exception);
+        }catch (Exception exception) {
+          	throw CompuconnectDataException.create(BuzonSolicitudPostgresqlDAOMessage.UPDATE_EXCEPTION_TECHNICAL_MESSAGE, BuzonSolicitudPostgresqlDAOMessage.UPDATE_EXCEPTION_USER_MESSAGE, exception);
         }
-    }
+        }
 
     @Override
     public void delete(BuzonSolicitudEntity entity) {
-        String sql = "DELETE FROM BuzonSolicitud WHERE campo1 = ?";
+        String sql = "DELETE FROM buzon_solicitud WHERE identificador = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
             statement.setObject(1, entity.getIdentificador());
 
             statement.executeUpdate();
-        } catch (SQLException e) {
-            //excepción
+        } catch (SQLException exception) {
+            throw CompuconnectDataException.create(BuzonSolicitudPostgresqlDAOMessage.DELETE_SQL_EXCEPTION_TECHNICAL_MESSAGE, BuzonSolicitudPostgresqlDAOMessage.DELETE_SQL_EXCEPTION_USER_MESSAGE, exception);
+        }catch(Exception exception) {
+            throw CompuconnectDataException.create(BuzonSolicitudPostgresqlDAOMessage.DELETE_EXCEPTION_TECHNICAL_MESSAGE, BuzonSolicitudPostgresqlDAOMessage.DELETE_EXCEPTION_USER_MESSAGE, exception);
         }
     }
+
+	@Override
+	protected String prepareSelect() {
+		return "SELECT identificador, solicitud, respuesta ";
+	}
+
+	@Override
+	protected String prepareFrom() {
+		return "FROM buzon_solicitud ";	
+		
+	}
+
+	@Override
+	protected String prepareWhere(BuzonSolicitudEntity entity, List<Object> parameters) {
+		
+		
+		final var where = new StringBuilder("");
+		parameters = UtilObject.getDefault(parameters, new ArrayList<>());
+		var setWhere = true;
+		
+		if(!UtilObject.isNull(entity)) {
+			if(!UtilUUID.isDefault(entity.getIdentificador())) {
+				parameters.add(entity.getIdentificador());
+				where.append("WHERE identificador=? ");
+				setWhere = false;
+			}
+			if(!UtilUUID.isDefault(entity.getSolicitud().getIdentificador())) {
+				parameters.add(entity.getSolicitud().getIdentificador());
+				where.append(setWhere ? "WHERE" : "AND ").append("solicitud=? ");
+				setWhere = false;
+			}
+			if(!UtilUUID.isDefault(entity.getRespuesta().getIdentificador())) {
+				parameters.add(entity.getRespuesta().getIdentificador());
+				where.append(setWhere ? "WHERE" : "AND ").append("respuesta=? ");
+			}
+			
+		
+		}
+		return where.toString();
+	}
+
+	@Override
+	protected String prepareOrderBy() {
+		return "ORDER BY ASC";
+	}
 }

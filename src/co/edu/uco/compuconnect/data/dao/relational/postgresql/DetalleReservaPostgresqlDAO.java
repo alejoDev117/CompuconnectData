@@ -23,7 +23,7 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 
     @Override
     public void create(DetalleReservaEntity entity) {
-        String sqlStatement = "INSERT INTO detalle_reservas (identificador, reserva_id, dia_semanal_id, hora_inicio, hora_fin) VALUES (?, ?, ?, ?, ?)";
+        String sqlStatement = "INSERT INTO detalle_reserva (identificador, reserva, diaSemanal, horaInicio, horaFin) VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement)) {
             statement.setObject(1, entity.getIdentificador());
@@ -49,7 +49,7 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 
     @Override
     public void update(DetalleReservaEntity entity) {
-        String sqlStatement = "UPDATE detalle_reservas SET reserva_id = ?, dia_semanal_id = ?, hora_inicio = ?, hora_fin = ? WHERE identificador = ?";
+        String sqlStatement = "UPDATE detalle_reserva SET reserva = ?, diaSemanal = ?, horaInicio = ?, horaFin = ? WHERE identificador = ?";
 
         try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement)) {
             statement.setObject(1, entity.getReserva().getIdentificador());
@@ -67,7 +67,7 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 
     @Override
     public void delete(DetalleReservaEntity entity) {
-        String sqlStatement = "DELETE FROM detalle_reservas WHERE identificador = ?";
+        String sqlStatement = "DELETE FROM detalle_reserva WHERE identificador = ?";
 
         try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement)) {
             statement.setObject(1, entity.getIdentificador());
@@ -81,12 +81,12 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 
 	@Override
 	protected String prepareSelect() {
-		return "SELECT identificador, reserva_id, dia_semanal_id, hora_inicio, hora_fin FROM detalle_reservas";
+		return "SELECT identificador, reserva, diaSemanal, horaInicio, horaFin ";
 	}
 
 	@Override
 	protected String prepareFrom() {
-		return "FROM detalle_reservas ";
+		return "FROM detalle_reserva ";
 	}
 
 	@Override
@@ -104,27 +104,27 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 	            setWhere = false;
 	        }
 
-	        if (!UtilObject.isNull(entity.getReserva())) {
-	            parameters.add(entity.getReserva());
-	            where.append(setWhere ? "WHERE" : "AND ").append("reserva_id = ? ");
+	        if (!UtilUUID.isDefault(entity.getReserva().getIdentificador())) {
+	            parameters.add(entity.getReserva().getIdentificador());
+	            where.append(setWhere ? "WHERE" : "AND ").append("reserva = ? ");
 	            setWhere = false;
 	        }
 
 	        if (!UtilObject.isNull(entity.getDia())) {
 	            parameters.add(entity.getDia());
-	            where.append(setWhere ? "WHERE" : "AND ").append("dia_semanal_id = ? ");
+	            where.append(setWhere ? "WHERE" : "AND ").append("diaSemanal = ? ");
 	            setWhere = false;
 	        }
 
 	        if (!UtilObject.isNull(entity.getHorainicio())) {
 	            parameters.add(entity.getHorainicio());
-	            where.append(setWhere ? "WHERE" : "AND ").append("hora_inicio = ? ");
+	            where.append(setWhere ? "WHERE" : "AND ").append("horaInicio = ? ");
 	            setWhere = false;
 	        }
 
 	        if (!UtilObject.isNull(entity.getHorafin())) {
 	            parameters.add(entity.getHorafin());
-	            where.append(setWhere ? "WHERE" : "AND ").append("hora_fin = ? ");
+	            where.append(setWhere ? "WHERE" : "AND ").append("horaFin = ? ");
 	        }
 	    }
 	    return where.toString();
@@ -133,6 +133,6 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 
 	@Override
 	protected String prepareOrderBy() {
-		return "ORDER BY hora_inicio ASC";
+		return "ORDER BY  ASC";
 	}
 }

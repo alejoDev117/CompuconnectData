@@ -9,6 +9,7 @@ import java.util.List;
 import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
 import co.edu.uco.compuconnect.crosscutting.utils.Messages.AgendaReservaPostgresqlDAOMessage;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
+import co.edu.uco.compuconnect.crosscutting.utils.UtilUUID;
 import co.edu.uco.compuconnect.data.dao.AgendaReservaDAO;
 import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
 import co.edu.uco.compuconnect.entities.AgendaReservaEntity;
@@ -21,12 +22,12 @@ public final class AgendaReservaPostgresqlDAO extends SqlDAO<AgendaReservaEntity
 
     @Override
     public final void create(final AgendaReservaEntity entity) {
-        String sqlStatement = "INSERT INTO AgendaReserva (identificador, agenda, reserva) VALUES (?, ?, ?)";
+        String sqlStatement = "INSERT INTO agenda_reserva (identificador, agenda, reserva) VALUES (?, ?, ?)";
 
         try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement)) {
             statement.setObject(1, entity.getIdentificador());
-            statement.setObject(2, entity.getAgenda());
-            statement.setObject(3, entity.getReserva());
+            statement.setObject(2, entity.getAgenda().getIdentificador());
+            statement.setObject(3, entity.getReserva().getIdentificador());
 
             statement.executeUpdate();
         } catch (SQLException exception) {
@@ -39,14 +40,14 @@ public final class AgendaReservaPostgresqlDAO extends SqlDAO<AgendaReservaEntity
     @Override
     public final List<AgendaReservaEntity> read(final AgendaReservaEntity entity) {
         List<AgendaReservaEntity> agendaList = new ArrayList<>();
-        String sqlStatement = "SELECT identificador, agenda, reserva FROM AgendaReserva WHERE identificador = ?";
+        String sqlStatement = "SELECT identificador, agenda, reserva FROM agenda_reserva WHERE identificador = ?";
 
         return agendaList;
     }
 
     @Override
     public final void delete(final AgendaReservaEntity entity) {
-        String sqlStatement = "DELETE FROM AgendaReserva WHERE identificador = ?";
+        String sqlStatement = "DELETE FROM agenda_reserva WHERE identificador = ?";
 
         try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement)) {
             statement.setObject(1, entity.getIdentificador());
@@ -78,19 +79,19 @@ public final class AgendaReservaPostgresqlDAO extends SqlDAO<AgendaReservaEntity
 
 	    if (!UtilObject.isNull(entity)) {
 
-	        if (entity.getIdentificador() != null) {
+	        if (!UtilUUID.isDefault(entity.getIdentificador())) {
 	            parameters.add(entity.getIdentificador());
 	            where.append("WHERE identificador = ? ");
 	            setWhere = false;
 	        }
 
-	        if (entity.getAgenda() != null) {
+	        if (!UtilUUID.isDefault(entity.getAgenda().getIdentificador())) {
 	            parameters.add(entity.getAgenda());
 	            where.append(setWhere ? "WHERE" : "AND ").append("agenda = ? ");
 	            setWhere = false;
 	        }
 
-	        if (entity.getReserva() != null) {
+	        if (!UtilUUID.isDefault(entity.getReserva().getIdentificador())) {
 	            parameters.add(entity.getReserva());
 	            where.append(setWhere ? "WHERE" : "AND ").append("reserva = ? ");
 	        }

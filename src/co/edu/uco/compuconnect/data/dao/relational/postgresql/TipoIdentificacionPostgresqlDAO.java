@@ -22,7 +22,7 @@ public final class TipoIdentificacionPostgresqlDAO extends SqlDAO<TipoIdentifica
 
     @Override
     public void create(TipoIdentificacionEntity entity) {
-        var sqlStatement = "INSERT INTO TipoIdentificacion (identificador, nombre, descripcion) " +
+        var sqlStatement = "INSERT INTO tipo_identificacion (identificador, nombre, descripcion) " +
                 "VALUES (?, ?, ?)";
 
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
@@ -68,7 +68,7 @@ public final class TipoIdentificacionPostgresqlDAO extends SqlDAO<TipoIdentifica
 
     @Override
     protected String prepareFrom() {
-        return "FROM TipoIdentificacion";
+        return "FROM tipo_identificacion";
     }
 
     @Override

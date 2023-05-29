@@ -2,11 +2,10 @@ package co.edu.uco.compuconnect.data.dao.relational.postgresql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
 
 import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
@@ -15,7 +14,6 @@ import co.edu.uco.compuconnect.crosscutting.utils.Messages.AgendaPostgresqlDAOMe
 import co.edu.uco.compuconnect.data.dao.AgendaDAO;
 import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
 import co.edu.uco.compuconnect.entities.AgendaEntity;
-import co.edu.uco.compuconnect.entities.PeriodoFuncionamientoEntity;
 
 public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  AgendaDAO {
 
@@ -77,8 +75,8 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
         String sqlStatement = "UPDATE agenda SET periodoFuncionamiento= ?, centroInformatica= ?,nombre = ? WHERE identificador = ?";
 
         try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement)) {
-            statement.setObject(1, entity.getPeriodoFuncionamiento().toString());
-            statement.setObject(2, entity.getCentroInformatica());
+            statement.setObject(1, entity.getPeriodoFuncionamiento().getIdentificador());
+            statement.setObject(2, entity.getCentroInformatica().getIdentificador());
             statement.setString(3, entity.getNombre());
             statement.setObject(4, entity.getIdentificador());	
 
@@ -108,7 +106,6 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 		var setWhere = true;
 		
 		if(!UtilObject.isNull(entity)) {
-			
 			if(!UtilUUID.isDefault(entity.getIdentificador())) {
 				parameters.add(entity.getIdentificador());
 				where.append("WHERE identificador=? ");
@@ -121,7 +118,7 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 			}
 			if(!UtilUUID.isDefault(entity.getCentroInformatica().getIdentificador())) {
 				parameters.add(entity.getCentroInformatica().getIdentificador());
-				where.append(setWhere ? "WHERE" : "AND ").append("periodoFuncionamiento=? ");
+				where.append(setWhere ? "WHERE" : "AND ").append("centroInformatica=? ");
 			}
 			
 		

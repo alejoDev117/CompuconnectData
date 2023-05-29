@@ -48,13 +48,13 @@ public final class PeriodoFuncionamientoPostgresqlDAO extends SqlDAO<PeriodoFunc
     }
 
     public void update(PeriodoFuncionamientoEntity entity) {
-        String sqlStatement = "UPDATE periodo_funcionamiento SET nombre = ?, fecha_inicio = ?, fecha_fin = ?, dia_festivo = ?, estado = ? WHERE identificador = ?";
+        String sqlStatement = "UPDATE periodo_funcionamiento SET nombre = ?, fechaInicio = ?, fechaFin = ?, diaFestivo = ?, estado = ? WHERE identificador = ?";
         try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement)) {
             statement.setString(1, entity.getNombre());
-            statement.setDate(2, new java.sql.Date(entity.getFechaInicio().getTime()));
-            statement.setDate(3, new java.sql.Date(entity.getFechaFin().getTime()));
-            statement.setObject(4, entity.getDiaFestivo());
-            statement.setObject(5, entity.getEstado());
+            statement.setObject(2, entity.getFechaInicio());
+            statement.setObject(3,entity.getFechaFin() );
+            statement.setObject(4, entity.getDiaFestivo().getIdentificador());
+            statement.setObject(5, entity.getEstado().getIdentificador());
             statement.setObject(6, entity.getIdentificador());
 
             statement.executeUpdate();
@@ -79,7 +79,7 @@ public final class PeriodoFuncionamientoPostgresqlDAO extends SqlDAO<PeriodoFunc
 
 	@Override
 	protected String prepareSelect() {
-		return "SELECT identificador, nombre, fecha_inicio, fecha_fin, dia_festivo, estado ";
+		return "SELECT identificador, nombre, fechaInicio, fechaFin, diaFestivo, estado ";
 	}
 
 	@Override
@@ -110,19 +110,19 @@ public final class PeriodoFuncionamientoPostgresqlDAO extends SqlDAO<PeriodoFunc
 
 	        if (entity.getFechaInicio() != null) {
 	            parameters.add(entity.getFechaInicio());
-	            where.append(setWhere ? "WHERE" : "AND ").append("fecha_inicio = ? ");
+	            where.append(setWhere ? "WHERE" : "AND ").append("fechaInicio = ? ");
 	            setWhere = false;
 	        }
 
 	        if (entity.getFechaFin() != null) {
 	            parameters.add(entity.getFechaFin());
-	            where.append(setWhere ? "WHERE" : "AND ").append("fecha_fin = ? ");
+	            where.append(setWhere ? "WHERE" : "AND ").append("fechaFin = ? ");
 	            setWhere = false;
 	        }
 
 	        if (entity.getDiaFestivo() != null) {
 	            parameters.add(entity.getDiaFestivo());
-	            where.append(setWhere ? "WHERE" : "AND ").append("dia_festivo = ? ");
+	            where.append(setWhere ? "WHERE" : "AND ").append("diaFestivo = ? ");
 	            setWhere = false;
 	        }
 

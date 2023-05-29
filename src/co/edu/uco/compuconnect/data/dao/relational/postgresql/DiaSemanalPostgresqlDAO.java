@@ -9,6 +9,7 @@ import java.util.List;
 import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
 import co.edu.uco.compuconnect.crosscutting.utils.Messages.DiaSemanalPostgresqlDAOMessage;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
+import co.edu.uco.compuconnect.crosscutting.utils.UtilText;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilUUID;
 import co.edu.uco.compuconnect.data.dao.DiaSemanalDAO;
 import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
@@ -45,12 +46,12 @@ public final class DiaSemanalPostgresqlDAO extends SqlDAO<DiaSemanalEntity> impl
 
 	@Override
 	protected String prepareSelect() {
-		return "SELECT identificador, nombre FROM dia_semanal";
+		return "SELECT identificador, nombre ";
 	}
 
 	@Override
 	protected String prepareFrom() {
-		return "FROM dia_semanal";
+		return "FROM dia_semanal ";
 	}
 
 	@Override
@@ -68,10 +69,11 @@ public final class DiaSemanalPostgresqlDAO extends SqlDAO<DiaSemanalEntity> impl
 	            setWhere = false;
 	        }
 
-	        if (entity.getNombre() != null) {
+	        if (!UtilText.getUtilText().isEmpty(entity.getNombre())) {
 	            parameters.add(entity.getNombre());
 	            where.append(setWhere ? "WHERE" : "AND ").append("nombre = ? ");
 	        }
+	        
 	    }
 	    return where.toString();
 	}

@@ -24,7 +24,7 @@ public final class TipoUsuarioPostgresqlDAO extends SqlDAO<TipoUsuarioEntity> im
 
     @Override
     public void create(TipoUsuarioEntity entity) {
-        var sqlStatement = "INSERT INTO TipoUsuario (identificador, nombre, descripcion) " +
+        var sqlStatement = "INSERT INTO tipo_Usuario (identificador, nombre, descripcion) " +
                 "VALUES (?, ?, ?)";
 
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {

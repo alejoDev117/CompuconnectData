@@ -22,14 +22,14 @@ public final class UsuarioPostgresqlDAO extends SqlDAO<UsuarioEntity> implements
 
     @Override
     public void create(UsuarioEntity entity) {
-        var sqlStatement = "INSERT INTO Usuario (identificador, tipo_usuario, nombre, tipo_identificacion, identificacion, correo_institucional) " +
+        var sqlStatement = "INSERT INTO usuario (identificador, tipoUsuario, nombre, tipoIdentificacion, identificacion, correoInstitucional) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
             preparedStatement.setObject(1, entity.getIdentificador());
-            preparedStatement.setObject(2, entity.getTipoUsuario().toString());
+            preparedStatement.setObject(2, entity.getTipoUsuario().getIdentificador());
             preparedStatement.setString(3, entity.getNombre());
-            preparedStatement.setObject(4, entity.getTipoIdentificacion());
+            preparedStatement.setObject(4, entity.getTipoIdentificacion().getIdentificador());
             preparedStatement.setString(5, entity.getIdentificacion());
             preparedStatement.setString(6, entity.getCorreoInstitucional());
 
@@ -67,8 +67,8 @@ public final class UsuarioPostgresqlDAO extends SqlDAO<UsuarioEntity> implements
     
     @Override
     public void update(UsuarioEntity entity) {
-        var sqlStatement = "UPDATE Usuario SET tipo_usuario = ?, nombre = ?, tipo_identificacion = ?, " +
-                "identificacion = ?, correo_institucional = ? WHERE identificador = ?";
+        var sqlStatement = "UPDATE usuario SET  nombre = ?, tipoIdentificacion = ?, " +
+                "identificacion = ?, correoInstitucional = ? WHERE identificador = ?";
 
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
             preparedStatement.setObject(1, entity.getTipoUsuario());
@@ -88,7 +88,7 @@ public final class UsuarioPostgresqlDAO extends SqlDAO<UsuarioEntity> implements
 
     @Override
     public void delete(UsuarioEntity entity) {
-        var sqlStatement = "DELETE FROM Usuario WHERE identificador = ?";
+        var sqlStatement = "DELETE FROM usuario WHERE identificador = ?";
 
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
             preparedStatement.setObject(1, entity.getIdentificador());
@@ -103,12 +103,12 @@ public final class UsuarioPostgresqlDAO extends SqlDAO<UsuarioEntity> implements
 
     @Override
     protected String prepareSelect() {
-        return "SELECT identificador, tipo_usuario, nombre, tipo_identificacion, identificacion, correo_institucional ";
+        return "SELECT identificador, tipoUsuario, nombre, tipoIdentificacion, identificacion, correoInstitucional ";
     }
 
     @Override
     protected String prepareFrom() {
-        return "FROM Usuario";
+        return "FROM usuario";
     }
     @Override
     protected String prepareWhere(final UsuarioEntity entity, List<Object> parameters) {
@@ -127,7 +127,7 @@ public final class UsuarioPostgresqlDAO extends SqlDAO<UsuarioEntity> implements
 
             if (!UtilObject.isNull(entity.getTipoUsuario())) {
                 parameters.add(entity.getTipoUsuario());
-                where.append(setWhere ? "WHERE " : "AND ").append("tipo_usuario = ? ");
+                where.append(setWhere ? "WHERE " : "AND ").append("tipoUsuario = ? ");
                 setWhere = false;
             }
 
@@ -139,7 +139,7 @@ public final class UsuarioPostgresqlDAO extends SqlDAO<UsuarioEntity> implements
 
             if (!UtilObject.isNull(entity.getTipoIdentificacion())) {
                 parameters.add(entity.getTipoIdentificacion());
-                where.append(setWhere ? "WHERE " : "AND ").append("tipo_identificacion = ? ");
+                where.append(setWhere ? "WHERE " : "AND ").append("tipoIdentificacion = ? ");
                 setWhere = false;
             }
 
@@ -151,7 +151,7 @@ public final class UsuarioPostgresqlDAO extends SqlDAO<UsuarioEntity> implements
 
             if (!UtilText.getUtilText().isEmpty(entity.getCorreoInstitucional())) {
                 parameters.add(entity.getCorreoInstitucional());
-                where.append(setWhere ? "WHERE " : "AND ").append("correo_institucional = ? ");
+                where.append(setWhere ? "WHERE " : "AND ").append("correoInstitucional = ? ");
                 setWhere = false;
             }
         }

@@ -10,6 +10,7 @@ import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException
 import co.edu.uco.compuconnect.crosscutting.utils.Messages.AgendaPostgresqlDAOMessage;
 import co.edu.uco.compuconnect.crosscutting.utils.Messages.EstadoPeriodoFuncionamientoPostgresqlDAOMessage;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
+import co.edu.uco.compuconnect.crosscutting.utils.UtilText;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilUUID;
 import co.edu.uco.compuconnect.data.dao.EstadoPeriodoFunicionamientoDAO;
 import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
@@ -25,7 +26,7 @@ public final class EstadoPeriodoFuncionamientoPostgresqlDAO extends SqlDAO<Estad
 
     @Override
     public void create(EstadoPeriodoFuncionamientoEntity entity) {
-        String sqlStatement = "INSERT INTO estados_periodo_funcionamiento (identificador, nombre, descripcion) VALUES (?, ?)";
+        String sqlStatement = "INSERT INTO estado_periodo_funcionamiento (identificador, nombre, descripcion) VALUES (?, ?)";
 
         try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement)) {
             statement.setObject(1, entity.getIdentificador());
@@ -53,7 +54,7 @@ public final class EstadoPeriodoFuncionamientoPostgresqlDAO extends SqlDAO<Estad
 
 	@Override
 	protected String prepareFrom() {
-		return "FROM estados_periodo_funcionamiento ";
+		return "FROM estado_periodo_funcionamiento ";
 	}
 
 	@Override
@@ -71,15 +72,16 @@ public final class EstadoPeriodoFuncionamientoPostgresqlDAO extends SqlDAO<Estad
 	            setWhere = false;
 	        }
 
-	        if (entity.getNombre() != null) {
+	        if (UtilText.getUtilText().isEmpty(entity.getNombre())) {
 	            parameters.add(entity.getNombre());
 	            where.append(setWhere ? "WHERE" : "AND ").append("nombre = ? ");
 	            setWhere = false;
 	        }
 
-	        if (entity.getDescripcion() != null) {
-	            parameters.add(entity.getDescripcion());
-	            where.append(setWhere ? "WHERE" : "AND ").append("descripcion = ? ");
+	        if (UtilText.getUtilText().isEmpty(entity.getNombre())) {
+	            parameters.add(entity.getNombre());
+	            where.append(setWhere ? "WHERE" : "AND ").append("descripcion LIKE %?% ");
+	            setWhere = false;
 	        }
 	    }
 	    return where.toString();
