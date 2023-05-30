@@ -1,20 +1,24 @@
 package co.edu.uco.compuconnect.data.dao.relational.postgresql;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilText;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilUUID;
-import co.edu.uco.compuconnect.crosscutting.utils.Messages.AgendaPostgresqlDAOMessage;
 import co.edu.uco.compuconnect.crosscutting.utils.Messages.ReservaPostgresqlDAOMessage;
 import co.edu.uco.compuconnect.data.dao.ReservaDAO;
 import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
+import co.edu.uco.compuconnect.entities.CentroInformaticaEntity;
+import co.edu.uco.compuconnect.entities.FrecuenciaEntity;
 import co.edu.uco.compuconnect.entities.ReservaEntity;
+import co.edu.uco.compuconnect.entities.TipoReservaEntity;
 import co.edu.uco.compuconnect.entities.UsuarioEntity;
 
 public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements ReservaDAO {
@@ -67,22 +71,24 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
     @Override
     public List<ReservaEntity> read(ReservaEntity entity) {
     	var sqlStatement = new StringBuilder();
-		var parameters = new ArrayList<>();
-		
-		sqlStatement.append(prepareSelect());
-		sqlStatement.append(prepareFrom());
-		sqlStatement.append(prepareWhere(entity, parameters));
-		sqlStatement.append(prepareOrderBy());
-		
-		try (var preparedStament = getConnection().prepareStatement(sqlStatement.toString())){
-			
-		} catch (SQLException exception) {
-			
-		} catch (Exception exception) {
-			
-		}
-		
-		return null;
+    	var listParameters = new ArrayList<>();
+    	
+    	sqlStatement.append(prepareSelect());
+    	sqlStatement.append(prepareFrom());
+    	sqlStatement.append(prepareWhere(entity, listParameters));
+    	sqlStatement.append(prepareOrderBy());
+    	
+    	try (var prepareStatement = getConnection().prepareStatement(sqlStatement.toString())){
+    		setParameters(prepareStatement, listParameters);
+    		return executeQuery(prepareStatement);
+    		
+    	}catch (CompuconnectDataException exception) {
+    		throw exception;
+    	}catch(SQLException exception) {
+    		throw CompuconnectDataException.create(ReservaPostgresqlDAOMessage.READ_SQL_EXCEPTION_TECHNICAL_MESSAGE, ReservaPostgresqlDAOMessage.READ_SQL_EXCEPTION_USER_MESSAGE, exception);
+    	}catch(Exception exception) {
+    		throw CompuconnectDataException.create(ReservaPostgresqlDAOMessage.READ_EXCEPTION_TECHNICAL_MESSAGE, ReservaPostgresqlDAOMessage.READ_EXCEPTION_USER_MESSAGE, exception);
+    	}
     }
 
     @Override
@@ -186,4 +192,51 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
     protected String prepareOrderBy() {
         return "ORDER BY fechaInicio ASC";
     }
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		try {
+			
+		if(!UtilObject.isNull(parameters) && !UtilObject.isNull(prepareStat)) {
+			for(int index = 0; index < parameters.size();index++) {
+				prepareStat.setObject(index + 1, parameters.get(index));
+				
+			}
+		}
+		}catch (SQLException exception) {
+			throw CompuconnectDataException.create(ReservaPostgresqlDAOMessage.SET_PARAMETERS_SQL_EXCEPTION_TECHNICAL_MESSAGE, ReservaPostgresqlDAOMessage.SET_PARAMETERS_SQL_EXCEPTION_USER_MESSAGE, exception);
+		}catch (Exception exception) {
+			throw CompuconnectDataException.create(ReservaPostgresqlDAOMessage.SET_PARAMETERS_EXCEPTION_TECHNICAL_MESSAGE, ReservaPostgresqlDAOMessage.SET_PARAMETERS_EXCEPTION_USER_MESSAGE, exception);
+		}
+		
+	}
+
+	@Override
+	protected List<ReservaEntity> executeQuery(PreparedStatement preparedStatement) {
+		List<ReservaEntity> listResultSet = new ArrayList<>();		
+		
+		try(var resultSet = preparedStatement.executeQuery()){
+			
+			while(resultSet.next()) {
+				var entityTmp = new ReservaEntity(resultSet.getObject("identificador",UUID.class)
+						, resultSet.getObject("autor",UsuarioEntity.class),
+						resultSet.getObject("tipoReserva",TipoReservaEntity.class), 
+						resultSet.getDate("fechaInicio"), resultSet.getDate("fechaFin"), 
+						resultSet.getObject("frecuencia",FrecuenciaEntity.class),
+						resultSet.getObject("centroInformatica",CentroInformaticaEntity.class),
+						resultSet.getString("descripcion"),
+						resultSet.getDate("horaCreacion"));
+				listResultSet.add(entityTmp);
+			}
+			
+		}catch (SQLException exception) {
+			throw CompuconnectDataException.create(ReservaPostgresqlDAOMessage.EXCECUTE_QUERY_SQL_EXCEPTION_TECHNICAL_MESSAGE, ReservaPostgresqlDAOMessage.EXCECUTE_QUERY_SQL_EXCEPTION_USER_MESSAGE, exception);
+		}catch (Exception exception) {
+			throw CompuconnectDataException.create(ReservaPostgresqlDAOMessage.EXCECUTE_QUERY_EXCEPTION_TECHNICAL_MESSAGE, ReservaPostgresqlDAOMessage.EXCECUTE_QUERY_EXCEPTION_USER_MESSAGE, exception);
+	}
+	
+		return listResultSet;
+	
+		
+	}
 }

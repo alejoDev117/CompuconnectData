@@ -98,4 +98,16 @@ public final class ReservaPerfilPostgresqlDAO extends SqlDAO<ReservaPerfilEntity
 	protected String prepareOrderBy() {
 		return "ORDER BY reserva ASC ";
 	}
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected List<ReservaPerfilEntity> executeQuery(PreparedStatement preparedStatement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

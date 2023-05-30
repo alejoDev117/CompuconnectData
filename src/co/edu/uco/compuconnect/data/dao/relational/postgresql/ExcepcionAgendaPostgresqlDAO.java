@@ -99,4 +99,16 @@ public final class ExcepcionAgendaPostgresqlDAO extends SqlDAO<ExcepcionAgendaEn
 	protected String prepareOrderBy() {
 		return "ORDER BY  ASC ";
 	}
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected List<ExcepcionAgendaEntity> executeQuery(PreparedStatement preparedStatement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

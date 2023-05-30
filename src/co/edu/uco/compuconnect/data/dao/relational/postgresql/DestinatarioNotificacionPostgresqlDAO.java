@@ -103,4 +103,16 @@ public final class DestinatarioNotificacionPostgresqlDAO extends SqlDAO<Destinat
 	protected String prepareOrderBy() {
 		return "ORDER BY ASC";
 	}
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected List<DestinatarioNotificacionEntity> executeQuery(PreparedStatement preparedStatement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

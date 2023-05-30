@@ -1,10 +1,12 @@
 package co.edu.uco.compuconnect.data.dao.relational.postgresql;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
@@ -14,6 +16,7 @@ import co.edu.uco.compuconnect.crosscutting.utils.Messages.FrecuenciaPostgresqlD
 import co.edu.uco.compuconnect.data.dao.FrecuenciaDAO;
 import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
 import co.edu.uco.compuconnect.entities.FrecuenciaEntity;
+
 
 public final class FrecuenciaPostgresqlDAO extends SqlDAO<FrecuenciaEntity> implements FrecuenciaDAO {
 
@@ -43,22 +46,25 @@ public final class FrecuenciaPostgresqlDAO extends SqlDAO<FrecuenciaEntity> impl
     @Override
     public List<FrecuenciaEntity> read(FrecuenciaEntity entity) {
     	var sqlStatement = new StringBuilder();
-		var parameters = new ArrayList<>();
-		
-		sqlStatement.append(prepareSelect());
-		sqlStatement.append(prepareFrom());
-		sqlStatement.append(prepareWhere(entity, parameters));
-		sqlStatement.append(prepareOrderBy());
-		
-		try (var preparedStament = getConnection().prepareStatement(sqlStatement.toString())){
-			
-		} catch (SQLException exception) {
-			
-		} catch (Exception exception) {
-			
-		}
-		
-		return null;
+    	var listParameters = new ArrayList<>();
+    	
+    	sqlStatement.append(prepareSelect());
+    	sqlStatement.append(prepareFrom());
+    	sqlStatement.append(prepareWhere(entity, listParameters));
+    	sqlStatement.append(prepareOrderBy());
+    	
+    	try (var prepareStatement = getConnection().prepareStatement(sqlStatement.toString())){
+    		setParameters(prepareStatement, listParameters);
+    		return executeQuery(prepareStatement);
+    		
+    	}catch (CompuconnectDataException exception) {
+    		throw exception;
+    	}catch(SQLException exception) {
+    		throw CompuconnectDataException.create(FrecuenciaPostgresqlDAOMessage.READ_SQL_EXCEPTION_TECHNICAL_MESSAGE, FrecuenciaPostgresqlDAOMessage.READ_SQL_EXCEPTION_USER_MESSAGE, exception);
+    	}catch(Exception exception) {
+    		throw CompuconnectDataException.create(FrecuenciaPostgresqlDAOMessage.READ_EXCEPTION_TECHNICAL_MESSAGE, FrecuenciaPostgresqlDAOMessage.READ_EXCEPTION_USER_MESSAGE, exception);
+    	}
+    	
     }
     
     @Override
@@ -105,5 +111,43 @@ public final class FrecuenciaPostgresqlDAO extends SqlDAO<FrecuenciaEntity> impl
 	@Override
 	protected String prepareOrderBy() {
 		return  "ORDER BY nombre ASC";
+	}
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		try {
+			
+		if(!UtilObject.isNull(parameters) && !UtilObject.isNull(prepareStat)) {
+			for(int index = 0; index < parameters.size();index++) {
+				prepareStat.setObject(index + 1, parameters.get(index));
+				
+			}
+		}
+		}catch (SQLException exception) {
+			throw CompuconnectDataException.create(FrecuenciaPostgresqlDAOMessage.SET_PARAMETERS_SQL_EXCEPTION_TECHNICAL_MESSAGE, FrecuenciaPostgresqlDAOMessage.SET_PARAMETERS_SQL_EXCEPTION_USER_MESSAGE, exception);
+		}catch (Exception exception) {
+			throw CompuconnectDataException.create(FrecuenciaPostgresqlDAOMessage.SET_PARAMETERS_EXCEPTION_TECHNICAL_MESSAGE, FrecuenciaPostgresqlDAOMessage.SET_PARAMETERS_EXCEPTION_USER_MESSAGE, exception);
+		}
+	}
+
+	@Override
+	protected List<FrecuenciaEntity> executeQuery(PreparedStatement preparedStatement) {
+		List<FrecuenciaEntity> listResultSet = new ArrayList<>();		
+		
+		try(var resultSet = preparedStatement.executeQuery()){
+			
+			while(resultSet.next()) {
+				var entityTmp = new FrecuenciaEntity(resultSet.getObject("identificador",UUID.class), resultSet.getString("nombre"), resultSet.getString("descripcion"));
+				listResultSet.add(entityTmp);
+			}
+			
+		}catch (SQLException exception) {
+			throw CompuconnectDataException.create(FrecuenciaPostgresqlDAOMessage.EXCECUTE_QUERY_SQL_EXCEPTION_TECHNICAL_MESSAGE, FrecuenciaPostgresqlDAOMessage.EXCECUTE_QUERY_SQL_EXCEPTION_USER_MESSAGE, exception);
+		}catch (Exception exception) {
+			throw CompuconnectDataException.create(FrecuenciaPostgresqlDAOMessage.EXCECUTE_QUERY_EXCEPTION_TECHNICAL_MESSAGE, FrecuenciaPostgresqlDAOMessage.EXCECUTE_QUERY_EXCEPTION_USER_MESSAGE, exception);
+	}
+	
+		return listResultSet;
+	
 	}
 }

@@ -93,4 +93,16 @@ public final class TipoNotificacionPostgresqlDAO extends SqlDAO<TipoNotificacion
         return "ORDER BY nombre ASC";
     }
 
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected List<TipoNotificacionEntity> executeQuery(PreparedStatement preparedStatement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

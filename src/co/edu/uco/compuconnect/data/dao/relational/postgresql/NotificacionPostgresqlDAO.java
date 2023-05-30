@@ -104,4 +104,16 @@ public final class NotificacionPostgresqlDAO extends SqlDAO<NotificacionEntity> 
 	protected String prepareOrderBy() {
 		return "ORDER BY contenido ASC ";
 	}
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected List<NotificacionEntity> executeQuery(PreparedStatement preparedStatement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

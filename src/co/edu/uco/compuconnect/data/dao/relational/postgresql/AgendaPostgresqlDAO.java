@@ -1,6 +1,7 @@
 package co.edu.uco.compuconnect.data.dao.relational.postgresql;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -51,7 +52,22 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
     	sqlStatement.append(prepareWhere(entity, listParameters));
     	sqlStatement.append(prepareOrderBy());
     	
+<<<<<<< Updated upstream
     	return null;
+=======
+    	try (var prepareStatement = getConnection().prepareStatement(sqlStatement.toString())){
+    		setParameters(prepareStatement, listParameters);
+    		return executeQuery(prepareStatement);
+    		
+    	}catch (CompuconnectDataException exception) {
+    		throw exception;
+    	}catch(SQLException exception) {
+    		throw CompuconnectDataException.create(AgendaPostgresqlDAOMessage.READ_SQL_EXCEPTION_TECHNICAL_MESSAGE, AgendaPostgresqlDAOMessage.READ_SQL_EXCEPTION_USER_MESSAGE, exception);
+    	}catch(Exception exception) {
+    		throw CompuconnectDataException.create(AgendaPostgresqlDAOMessage.READ_EXCEPTION_TECHNICAL_MESSAGE, AgendaPostgresqlDAOMessage.READ_EXCEPTION_USER_MESSAGE, exception);
+    	}
+    	
+>>>>>>> Stashed changes
     }
 
     @Override
@@ -130,6 +146,53 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 	protected String prepareOrderBy() {
 		return "ORDER BY nombre ASC";
 	}
+<<<<<<< Updated upstream
 	
 
+=======
+
+	@Override
+	protected void setParameters(final PreparedStatement prepareStatement, final List<Object> parameters) {
+		try {
+			
+		if(!UtilObject.isNull(parameters) && !UtilObject.isNull(prepareStatement)) {
+			for(int index = 0; index < parameters.size();index++) {
+				prepareStatement.setObject(index + 1, parameters.get(index));
+				
+			}
+		}
+		}catch (SQLException exception) {
+			throw CompuconnectDataException.create(AgendaPostgresqlDAOMessage.SET_PARAMETERS_SQL_EXCEPTION_TECHNICAL_MESSAGE, AgendaPostgresqlDAOMessage.SET_PARAMETERS_SQL_EXCEPTION_USER_MESSAGE, exception);
+		}catch (Exception exception) {
+			throw CompuconnectDataException.create(AgendaPostgresqlDAOMessage.SET_PARAMETERS_EXCEPTION_TECHNICAL_MESSAGE, AgendaPostgresqlDAOMessage.SET_PARAMETERS_EXCEPTION_USER_MESSAGE, exception);
+		}
+		
+	}
+
+
+	@Override
+	protected List<AgendaEntity> executeQuery(PreparedStatement preparedStatement) {
+		
+		List<AgendaEntity> listResultSet = new ArrayList<>();		
+		
+		try(var resultSet = preparedStatement.executeQuery()){
+			
+			while(resultSet.next()) {
+				var entityTmp = new AgendaEntity(resultSet.getObject("identificador",UUID.class)
+						,resultSet.getObject("periodoFuncionamiento",PeriodoFuncionamientoEntity.class),
+						resultSet.getObject("centroInformatica",CentroInformaticaEntity.class)
+						,resultSet.getString("nombre"));
+				listResultSet.add(entityTmp);
+			}
+			
+		}catch (SQLException exception) {
+			throw CompuconnectDataException.create(AgendaPostgresqlDAOMessage.EXCECUTE_QUERY_SQL_EXCEPTION_TECHNICAL_MESSAGE, AgendaPostgresqlDAOMessage.EXCECUTE_QUERY_SQL_EXCEPTION_USER_MESSAGE, exception);
+		}catch (Exception exception) {
+			throw CompuconnectDataException.create(AgendaPostgresqlDAOMessage.EXCECUTE_QUERY_EXCEPTION_TECHNICAL_MESSAGE, AgendaPostgresqlDAOMessage.EXCECUTE_QUERY_EXCEPTION_USER_MESSAGE, exception);
+	}
+	
+		return listResultSet;
+	}
+		
+>>>>>>> Stashed changes
 }

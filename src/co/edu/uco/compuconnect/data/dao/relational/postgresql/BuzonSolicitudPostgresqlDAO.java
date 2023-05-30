@@ -123,4 +123,16 @@ public final class BuzonSolicitudPostgresqlDAO extends SqlDAO<BuzonSolicitudEnti
 	protected String prepareOrderBy() {
 		return "ORDER BY ASC";
 	}
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected List<BuzonSolicitudEntity> executeQuery(PreparedStatement preparedStatement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

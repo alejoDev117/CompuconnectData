@@ -133,4 +133,16 @@ public final class CoordinadorPostgresqlDAO extends SqlDAO<CoordinadorEntity> im
 	protected String prepareOrderBy() {
 		return "ORDER BY nombre ASC ";
 	}
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected List<CoordinadorEntity> executeQuery(PreparedStatement preparedStatement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -1,6 +1,7 @@
 package co.edu.uco.compuconnect.data.dao.relational.postgresql;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -44,33 +45,25 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 
     @Override
     public List<CentroInformaticaEntity> read(CentroInformaticaEntity entity) {
-        var sqlStatement = new StringBuilder();
-        var parameters = new ArrayList<Object>();
-        List<CentroInformaticaEntity> entities = new ArrayList<>();
-
-        sqlStatement.append(prepareSelect());
-        sqlStatement.append(prepareFrom());
-        sqlStatement.append(prepareWhere(entity, parameters));
-        sqlStatement.append(prepareOrderBy());
-
-        try (var preparedStatement = getConnection().prepareStatement(sqlStatement.toString())) {
-            setParameters(preparedStatement, parameters);
-
-            try (var resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    CentroInformaticaEntity centro = new CentroInformaticaEntity(resultSet.getObject("identificador", UUID.class),
-                            resultSet.getString("nombre"), resultSet.getString("ubicacion"), resultSet.getBoolean("\"poseeVideoBeam\""));
-                    entities.add(centro);
-                }
-            }
-
-        } catch (SQLException exception) {
-            throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.READ_SQL_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.READ_SQL_EXCEPTION_USER_MESSAGE, exception);
-        } catch (Exception exception) {
-            throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.READ_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.READ_EXCEPTION_USER_MESSAGE, exception);
-        }
-
-        return entities;
+    	var sqlStatement = new StringBuilder();
+    	var listParameters = new ArrayList<>();
+    	
+    	sqlStatement.append(prepareSelect());
+    	sqlStatement.append(prepareFrom());
+    	sqlStatement.append(prepareWhere(entity, listParameters));
+    	sqlStatement.append(prepareOrderBy());
+    	
+    	try (var prepareStatement = getConnection().prepareStatement(sqlStatement.toString())){
+    		setParameters(prepareStatement, listParameters);
+    		return executeQuery(prepareStatement);
+    		
+    	}catch (CompuconnectDataException exception) {
+    		throw exception;
+    	}catch(SQLException exception) {
+    		throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.READ_SQL_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.READ_SQL_EXCEPTION_USER_MESSAGE, exception);
+    	}catch(Exception exception) {
+    		throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.READ_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.READ_EXCEPTION_USER_MESSAGE, exception);
+    	}
     }
 
 
@@ -152,10 +145,44 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 		return  "ORDER BY nombre ASC";
 	}
 	
-	 private void setParameters(PreparedStatement preparedStatement, List<Object> parameters) throws SQLException {
-	        for (int i = 0; i < parameters.size(); i++) {
-	            Object parameter = parameters.get(i);
-	            preparedStatement.setObject(i + 1, parameter);
-	        }
-	    }
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		try {
+			
+		if(!UtilObject.isNull(parameters) && !UtilObject.isNull(prepareStat)) {
+			for(int index = 0; index < parameters.size();index++) {
+				prepareStat.setObject(index + 1, parameters.get(index));
+				
+			}
+		}
+		}catch (SQLException exception) {
+			throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.SET_PARAMETERS_SQL_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.SET_PARAMETERS_SQL_EXCEPTION_USER_MESSAGE, exception);
+		}catch (Exception exception) {
+			throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.SET_PARAMETERS_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.SET_PARAMETERS_EXCEPTION_USER_MESSAGE, exception);
+		}
+	}
+
+	@Override
+	protected List<CentroInformaticaEntity> executeQuery(PreparedStatement preparedStatement) {
+		
+		List<CentroInformaticaEntity> listResultSet = new ArrayList<>();		
+		
+		try(var resultSet = preparedStatement.executeQuery()){
+			
+			while(resultSet.next()) {
+				var entityTmp = new CentroInformaticaEntity(resultSet.getObject("identificador",UUID.class),
+						resultSet.getString("nombre"), 
+						resultSet.getString("ubicacion"), resultSet.getBoolean("poseeVideoBeam"));
+				listResultSet.add(entityTmp);
+			}
+			
+		}catch (SQLException exception) {
+			throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.EXCECUTE_QUERY_SQL_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.EXCECUTE_QUERY_SQL_EXCEPTION_USER_MESSAGE, exception);
+		}catch (Exception exception) {
+			throw CompuconnectDataException.create(CentroInformaticaPostgresqlDAOMessage.EXCECUTE_QUERY_EXCEPTION_TECHNICAL_MESSAGE, CentroInformaticaPostgresqlDAOMessage.EXCECUTE_QUERY_EXCEPTION_USER_MESSAGE, exception);
+	}
+	
+		return listResultSet;
+	}
 }

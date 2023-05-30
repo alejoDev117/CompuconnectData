@@ -99,4 +99,16 @@ public final class EstadoNotificacionPostgresqlDAO extends SqlDAO<EstadoNotifica
 		}
 		return where.toString();
 	}
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected List<EstadoNotificacionEntity> executeQuery(PreparedStatement preparedStatement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

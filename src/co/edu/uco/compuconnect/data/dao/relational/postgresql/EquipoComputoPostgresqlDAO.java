@@ -118,4 +118,16 @@ public final class EquipoComputoPostgresqlDAO extends SqlDAO<EquipoComputoEntity
 	protected String prepareOrderBy() {
 		return "ORDER BY nombre ASC ";
 	}
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected List<EquipoComputoEntity> executeQuery(PreparedStatement preparedStatement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

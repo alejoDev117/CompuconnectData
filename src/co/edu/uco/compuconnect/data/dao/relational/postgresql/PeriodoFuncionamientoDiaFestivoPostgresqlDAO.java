@@ -101,4 +101,16 @@ public final class PeriodoFuncionamientoDiaFestivoPostgresqlDAO extends SqlDAO<P
 	protected String prepareOrderBy() {
 		return "ORDER BY  ASC ";
 	}
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected List<PeriodoFuncionamientoDiaFestivoEntity> executeQuery(PreparedStatement preparedStatement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

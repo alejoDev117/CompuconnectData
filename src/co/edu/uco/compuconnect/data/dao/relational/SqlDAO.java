@@ -1,6 +1,7 @@
 package co.edu.uco.compuconnect.data.dao.relational;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.List;
 
 import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
@@ -34,6 +35,10 @@ public abstract class SqlDAO<E> {
 	protected abstract String prepareWhere(E entity, List<Object> parameters);
 	
 	protected abstract String prepareOrderBy();
+	
+	protected abstract void setParameters(PreparedStatement prepareStat, List<Object> parameters);
+	
+	protected abstract List<E>executeQuery(PreparedStatement preparedStatement);
 	
 
 }

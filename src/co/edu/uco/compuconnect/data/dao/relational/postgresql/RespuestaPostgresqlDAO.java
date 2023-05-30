@@ -102,4 +102,16 @@ public final class RespuestaPostgresqlDAO extends SqlDAO<RespuestaEntity> implem
 	protected String prepareOrderBy() {
 		return "ORDER BY observacion ASC ";
 	}
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected List<RespuestaEntity> executeQuery(PreparedStatement preparedStatement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

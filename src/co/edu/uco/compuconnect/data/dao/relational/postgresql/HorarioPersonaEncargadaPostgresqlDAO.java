@@ -118,4 +118,16 @@ public final class HorarioPersonaEncargadaPostgresqlDAO extends SqlDAO<HorarioPe
 	protected String prepareOrderBy() {
 		return "ORDER BY personaEncargada ASC ";
 	}
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected List<HorarioPersonaEncargadaEntity> executeQuery(PreparedStatement preparedStatement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

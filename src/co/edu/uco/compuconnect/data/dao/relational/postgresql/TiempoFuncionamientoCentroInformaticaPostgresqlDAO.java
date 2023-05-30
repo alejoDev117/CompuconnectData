@@ -108,4 +108,18 @@ public final class TiempoFuncionamientoCentroInformaticaPostgresqlDAO extends Sq
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	protected List<TiempoFuncionamientoCentroInformaticaEntity> executeQuery(PreparedStatement preparedStatement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

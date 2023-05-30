@@ -91,5 +91,17 @@ public final class EstadoSolicitudPostgresqlDAO extends SqlDAO<EstadoSolicitudEn
 		}
 		return where.toString();
 	}
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected List<EstadoSolicitudEntity> executeQuery(PreparedStatement preparedStatement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
  

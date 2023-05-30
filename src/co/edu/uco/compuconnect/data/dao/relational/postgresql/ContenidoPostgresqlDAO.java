@@ -97,4 +97,16 @@ public class ContenidoPostgresqlDAO extends SqlDAO<ContenidoEntity> implements C
 	protected String prepareOrderBy() {
 		return "ORDER BY descripcion ASC ";
 	}
+
+	@Override
+	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected List<ContenidoEntity> executeQuery(PreparedStatement preparedStatement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
