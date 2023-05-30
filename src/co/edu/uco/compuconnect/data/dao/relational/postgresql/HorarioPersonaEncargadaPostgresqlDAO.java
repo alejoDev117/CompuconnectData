@@ -18,7 +18,7 @@ public final class HorarioPersonaEncargadaPostgresqlDAO extends SqlDAO<HorarioPe
 
 
     public HorarioPersonaEncargadaPostgresqlDAO(final Connection connection) {
-       super(connection)
+       super(connection);
     }
 
     @Override

@@ -19,7 +19,7 @@ public class PersonaEncargadaPostgresqlDAO extends SqlDAO<PersonaEncargadaEntity
 
 
     public PersonaEncargadaPostgresqlDAO(final Connection connection) {
-       super(connection)
+       super(connection);
     }
 
     @Override
