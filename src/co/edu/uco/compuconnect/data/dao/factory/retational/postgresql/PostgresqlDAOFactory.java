@@ -101,7 +101,7 @@ public final class PostgresqlDAOFactory extends DAOFactory {
 	@Override
 	protected void abrirConexion() {
         try {
-        	connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/compuconnect", "postgres", "Bijuus12");
+        	connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/Compuconnect", "postgres", "admin");
             UtilSql.connectionIsOpen(connection);
         } catch (final IllegalArgumentException exception) {
             var userMessage = UtilSqlMessage.CONNECTION_IS_OPEN_USER_MESSAGE;

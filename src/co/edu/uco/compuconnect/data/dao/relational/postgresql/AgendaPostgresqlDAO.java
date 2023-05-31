@@ -2,10 +2,12 @@ package co.edu.uco.compuconnect.data.dao.relational.postgresql;
 
 import java.sql.Connection;
 
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
@@ -14,6 +16,8 @@ import co.edu.uco.compuconnect.crosscutting.utils.Messages.AgendaPostgresqlDAOMe
 import co.edu.uco.compuconnect.data.dao.AgendaDAO;
 import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
 import co.edu.uco.compuconnect.entities.AgendaEntity;
+import co.edu.uco.compuconnect.entities.CentroInformaticaEntity;
+import co.edu.uco.compuconnect.entities.PeriodoFuncionamientoEntity;
 
 public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  AgendaDAO {
 
@@ -51,10 +55,7 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
     	sqlStatement.append(prepareFrom());
     	sqlStatement.append(prepareWhere(entity, listParameters));
     	sqlStatement.append(prepareOrderBy());
-    	
-<<<<<<< Updated upstream
-    	return null;
-=======
+    
     	try (var prepareStatement = getConnection().prepareStatement(sqlStatement.toString())){
     		setParameters(prepareStatement, listParameters);
     		return executeQuery(prepareStatement);
@@ -67,7 +68,6 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
     		throw CompuconnectDataException.create(AgendaPostgresqlDAOMessage.READ_EXCEPTION_TECHNICAL_MESSAGE, AgendaPostgresqlDAOMessage.READ_EXCEPTION_USER_MESSAGE, exception);
     	}
     	
->>>>>>> Stashed changes
     }
 
     @Override
@@ -146,10 +146,7 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 	protected String prepareOrderBy() {
 		return "ORDER BY nombre ASC";
 	}
-<<<<<<< Updated upstream
-	
 
-=======
 
 	@Override
 	protected void setParameters(final PreparedStatement prepareStatement, final List<Object> parameters) {
@@ -178,10 +175,10 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 		try(var resultSet = preparedStatement.executeQuery()){
 			
 			while(resultSet.next()) {
-				var entityTmp = new AgendaEntity(resultSet.getObject("identificador",UUID.class)
-						,resultSet.getObject("periodoFuncionamiento",PeriodoFuncionamientoEntity.class),
-						resultSet.getObject("centroInformatica",CentroInformaticaEntity.class)
-						,resultSet.getString("nombre"));
+				var entityTmp = new AgendaEntity(resultSet.getObject("identificador",UUID.class),
+					resultSet.getObject("periodoFuncionamiento",PeriodoFuncionamientoEntity.class),
+					resultSet.getObject("centroInformatica",CentroInformaticaEntity.class), 
+					resultSet.getString("nombre"));
 				listResultSet.add(entityTmp);
 			}
 			
@@ -194,5 +191,4 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 		return listResultSet;
 	}
 		
->>>>>>> Stashed changes
 }
