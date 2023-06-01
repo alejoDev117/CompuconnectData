@@ -21,7 +21,6 @@ import co.edu.uco.compuconnect.entities.PeriodoFuncionamientoEntity;
 
 public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  AgendaDAO {
 
-
    
     public AgendaPostgresqlDAO(final Connection connection) {
 		super(connection);
@@ -29,8 +28,8 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 
 	@Override
     public void create(final AgendaEntity entity) {
-        String sqlStatement = "INSERT INTO agenda (identificador,\"periodoFuncionamiento\", \"centroInformatica\", nombre) VALUES (?, ?, ?, ?)";
-
+        String sqlStatement = "INSERT INTO agenda (identificador, periodo_funcionamiento, centro_informatica, nombre) VALUES (?, ?, ?, ?)";
+        
         try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement)) {
             statement.setObject(1, entity.getIdentificador());
             statement.setObject(2, entity.getPeriodoFuncionamiento().getIdentificador());
@@ -72,7 +71,7 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 
     @Override
     public void delete(final AgendaEntity entity) {
-        String sqlStatement = "DELETE FROM agenda WHERE identificador = ?";
+        String sqlStatement = "DELETE FROM agenda WHERE identificador = ? ";
 
         try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement)) {
             statement.setObject(1, entity.getIdentificador());
@@ -87,7 +86,7 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 
     @Override
     public void uptade(AgendaEntity entity) {
-        String sqlStatement = "UPDATE agenda SET periodoFuncionamiento= ?, centroInformatica= ?,nombre = ? WHERE identificador = ?";
+        String sqlStatement = "UPDATE agenda SET periodo_funcionamiento= ?, centro_informatica= ?,nombre = ? WHERE identificador = ? ";
 
         try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement)) {
             statement.setObject(1, entity.getPeriodoFuncionamiento().toString());
@@ -105,13 +104,15 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 
 	@Override
 	protected String prepareSelect() {
-		return "SELECT identificador, periodoFuncionamiento, centroInformatica, nombre ";
+		return "SELECT agenda.identificador, periodo_funcionamiento.identificador, centro_informatica.identificador, agenda.nombre ";
 	}
 
 	@Override
 	protected String prepareFrom() {
-		return "FROM agenda ";
+		return "FROM agenda JOIN periodo_funcionamiento  ON periodo_funcionamiento.identificador = agenda.periodo_funcionamiento JOIN centro_informatica "
+				+ "ON centro_informatica.identificador = agenda.centro_informatica ";
 	}
+	
 
 	@Override
 	protected String prepareWhere(final AgendaEntity entity, List<Object> parameters) {
@@ -124,17 +125,17 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 			
 			if(!UtilUUID.isDefault(entity.getIdentificador())) {
 				parameters.add(entity.getIdentificador());
-				where.append("WHERE identificador=? ");
+				where.append("WHERE agenda.identificador=? ");
 				setWhere = false;
 			}
 			if(!UtilUUID.isDefault(entity.getPeriodoFuncionamiento().getIdentificador())) {
 				parameters.add(entity.getPeriodoFuncionamiento().getIdentificador());
-				where.append(setWhere ? "WHERE" : "AND ").append("periodoFuncionamiento=? ");
+				where.append(setWhere ? "WHERE" : "AND ").append("periodo_funcionamiento.identificador=? ");
 				setWhere = false;
 			}
 			if(!UtilUUID.isDefault(entity.getCentroInformatica().getIdentificador())) {
 				parameters.add(entity.getCentroInformatica().getIdentificador());
-				where.append(setWhere ? "WHERE" : "AND ").append("periodoFuncionamiento=? ");
+				where.append(setWhere ? "WHERE" : "AND ").append("centro_informatica.identificador=? ");
 			}
 			
 		
@@ -144,7 +145,7 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 
 	@Override
 	protected String prepareOrderBy() {
-		return "ORDER BY nombre ASC";
+		return "ORDER BY agenda.nombre ASC ";
 	}
 
 
@@ -176,8 +177,8 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 			
 			while(resultSet.next()) {
 				var entityTmp = new AgendaEntity(resultSet.getObject("identificador",UUID.class),
-					resultSet.getObject("periodoFuncionamiento",PeriodoFuncionamientoEntity.class),
-					resultSet.getObject("centroInformatica",CentroInformaticaEntity.class), 
+					resultSet.getObject("periodo_funcionamiento",PeriodoFuncionamientoEntity.class),
+					resultSet.getObject("centro_informatica",CentroInformaticaEntity.class), 
 					resultSet.getString("nombre"));
 				listResultSet.add(entityTmp);
 			}

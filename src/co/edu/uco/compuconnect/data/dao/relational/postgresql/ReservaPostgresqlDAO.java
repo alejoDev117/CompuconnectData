@@ -29,7 +29,7 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
 
     @Override
     public void create(ReservaEntity entity) {
-        var sqlStatement = "INSERT INTO reserva (identificador, autor, tipo, fechaInicio, fechaFin, frecuencia, centroInformatica, descripcion, horaCreacion) " +
+        var sqlStatement = "INSERT INTO reserva (identificador, autor, tipo, fecha_inicio, fecha_fin, frecuencia, centro_informatica, descripcion, hora_creacion) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
@@ -118,7 +118,8 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
 
     @Override
     protected String prepareFrom() {
-        return "FROM reserva ";
+        return "FROM reserva r JOIN usuario u ON u.identificador = r.autor JOIN tipo_reserva tr ON tr.identificador = r.tipo JOIN frecuencia f "
+        		+ "ON f.identificador = r.frecuencia JOIN centro_informatica ci ON ci.identificador = r.centro_informatica ";
     }
 
     @Override

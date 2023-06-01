@@ -114,7 +114,7 @@ public final class UsuarioPostgresqlDAO extends SqlDAO<UsuarioEntity> implements
 
     @Override
     protected String prepareFrom() {
-        return "FROM usuario";
+        return "FROM usuario ";
     }
     @Override
     protected String prepareWhere(final UsuarioEntity entity, List<Object> parameters) {

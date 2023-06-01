@@ -64,7 +64,7 @@ public final class FrecuenciaPostgresqlDAO extends SqlDAO<FrecuenciaEntity> impl
     	}catch(Exception exception) {
     		throw CompuconnectDataException.create(FrecuenciaPostgresqlDAOMessage.READ_EXCEPTION_TECHNICAL_MESSAGE, FrecuenciaPostgresqlDAOMessage.READ_EXCEPTION_USER_MESSAGE, exception);
     	}
-    	
+ 
     }
     
     @Override
@@ -74,7 +74,7 @@ public final class FrecuenciaPostgresqlDAO extends SqlDAO<FrecuenciaEntity> impl
 
 	@Override
 	protected String prepareFrom() {
-		return "FROM frecuencia";
+		return "FROM frecuencia ";
 	}
 
 	@Override
@@ -99,7 +99,8 @@ public final class FrecuenciaPostgresqlDAO extends SqlDAO<FrecuenciaEntity> impl
 			}
 			if(!UtilText.getUtilText().isEmpty(entity.getDescripcion())) {
 				parameters.add(entity.getDescripcion());
-				where.append("WHERE descripcion LIKE %?% ");
+				where.append(setWhere ? "WHERE " : "AND ").append("descripcion=? ");
+				setWhere = false;
 	
 			}
 			

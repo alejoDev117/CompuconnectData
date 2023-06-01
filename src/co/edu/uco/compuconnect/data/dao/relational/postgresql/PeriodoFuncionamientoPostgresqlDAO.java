@@ -26,7 +26,7 @@ public final class PeriodoFuncionamientoPostgresqlDAO extends SqlDAO<PeriodoFunc
     }
 
     public void create(PeriodoFuncionamientoEntity entity) {
-        String sqlStatement = "INSERT INTO periodo_funcionamiento (identificador, nombre, fecha_inicio, fecha_fin, dia_festivo, estado) VALUES (?, ?, ?, ?, ?, ?)";
+        String sqlStatement = "INSERT INTO periodo_funcionamiento (identificador, nombre, fecha_inicio, fecha_fin, estado, dia_festivo) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement)) {
             statement.setObject(1, entity.getIdentificador());
             statement.setString(2, entity.getNombre());
@@ -105,7 +105,7 @@ public final class PeriodoFuncionamientoPostgresqlDAO extends SqlDAO<PeriodoFunc
 
 	@Override
 	protected String prepareFrom() {
-		return "FROM periodo_funcionamiento ";
+		return "FROM periodo_funcionamiento pf JOIN estados_periodo_funcionamiento epf ON epf.identificador = pf.estado ";
 	}
 
 	@Override

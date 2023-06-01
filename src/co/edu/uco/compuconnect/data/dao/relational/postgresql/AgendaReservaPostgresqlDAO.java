@@ -87,7 +87,7 @@ public final class AgendaReservaPostgresqlDAO extends SqlDAO<AgendaReservaEntity
 
 	@Override
 	protected String prepareFrom() {
-		return "FROM AgendaReserva ";
+		return "FROM agenda_reserva ar JOIN agenda a ON a.identificador = ar.agenda JOIN reserva r ON r.identificador = ar.reserva ";
 	}
 
 	@Override

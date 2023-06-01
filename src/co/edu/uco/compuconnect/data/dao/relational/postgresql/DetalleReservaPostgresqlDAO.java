@@ -28,7 +28,7 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 
     @Override
     public void create(DetalleReservaEntity entity) {
-        String sqlStatement = "INSERT INTO detalle_reserva (identificador, reserva, diaSemanal, horaInicio, horaFin) VALUES (?, ?, ?, ?, ?)";
+        String sqlStatement = "INSERT INTO detalle_reserva (identificador, reserva_id, dia_semanal_id, hora_inicio, hora_fin) VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement)) {
             statement.setObject(1, entity.getIdentificador());
@@ -70,7 +70,7 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 
     @Override
     public void update(DetalleReservaEntity entity) {
-        String sqlStatement = "UPDATE detalle_reserva SET reserva = ?, diaSemanal = ?, horaInicio = ?, horaFin = ? WHERE identificador = ?";
+        String sqlStatement = "UPDATE detalle_reserva SET reserva_id = ?, dia_semanal_id = ?, hora_inicio = ?, hora_fin = ? WHERE identificador = ?";
 
         try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement)) {
             statement.setObject(1, entity.getReserva().getIdentificador());
@@ -102,12 +102,12 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 
 	@Override
 	protected String prepareSelect() {
-		return "SELECT identificador, reserva, diaSemanal, horaInicio, horaFin ";
+		return "SELECT identificador, reserva_id, dia_semanal_id, hora_inicio, hora_fin ";
 	}
 
 	@Override
 	protected String prepareFrom() {
-		return "FROM detalle_reserva ";
+		return "FROM detalle_reserva dr JOIN reserva r ON r.identificador = dr.reserva_id JOIN dia d ON d.identificador = dr.dia_semanal_id ";
 	}
 
 	@Override
@@ -127,25 +127,25 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 
 	        if (!UtilUUID.isDefault(entity.getReserva().getIdentificador())) {
 	            parameters.add(entity.getReserva().getIdentificador());
-	            where.append(setWhere ? "WHERE" : "AND ").append("reserva = ? ");
+	            where.append(setWhere ? "WHERE" : "AND ").append("reserva_id = ? ");
 	            setWhere = false;
 	        }
 
 	        if (!UtilObject.isNull(entity.getDia())) {
 	            parameters.add(entity.getDia());
-	            where.append(setWhere ? "WHERE" : "AND ").append("diaSemanal = ? ");
+	            where.append(setWhere ? "WHERE" : "AND ").append("dia_semanal_id = ? ");
 	            setWhere = false;
 	        }
 
 	        if (!UtilObject.isNull(entity.getHorainicio())) {
 	            parameters.add(entity.getHorainicio());
-	            where.append(setWhere ? "WHERE" : "AND ").append("horaInicio = ? ");
+	            where.append(setWhere ? "WHERE" : "AND ").append("hora_inicio = ? ");
 	            setWhere = false;
 	        }
 
 	        if (!UtilObject.isNull(entity.getHorafin())) {
 	            parameters.add(entity.getHorafin());
-	            where.append(setWhere ? "WHERE" : "AND ").append("horaFin = ? ");
+	            where.append(setWhere ? "WHERE" : "AND ").append("hora_fin = ? ");
 	        }
 	    }
 	    return where.toString();
@@ -154,7 +154,7 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 
 	@Override
 	protected String prepareOrderBy() {
-		return "ORDER BY  ASC";
+		return "ORDER hora_inicio BY ASC ";
 	}
 
 	@Override
@@ -182,10 +182,10 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 			
 			while(resultSet.next()) {
 				var entityTmp = new DetalleReservaEntity(resultSet.getObject("identificador",UUID.class), 
-						resultSet.getObject("reserva",ReservaEntity.class),
-						resultSet.getObject("diaSemanal",DiaSemanalEntity.class), 
-						UtilDateTime.toLocalTimeFromDate(resultSet.getDate("horaInicio")), 
-						 UtilDateTime.toLocalTimeFromDate(resultSet.getDate("horaFin")));
+						resultSet.getObject("reserva_id",ReservaEntity.class),
+						resultSet.getObject("dia_semanal_id",DiaSemanalEntity.class), 
+						UtilDateTime.toLocalTimeFromDate(resultSet.getDate("hora_inicio")), 
+						 UtilDateTime.toLocalTimeFromDate(resultSet.getDate("hora_fin")));
 				listResultSet.add(entityTmp);
 			}
 			

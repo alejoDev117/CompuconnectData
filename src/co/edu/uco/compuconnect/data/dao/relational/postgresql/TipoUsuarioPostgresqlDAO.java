@@ -74,7 +74,7 @@ public final class TipoUsuarioPostgresqlDAO extends SqlDAO<TipoUsuarioEntity> im
 
     @Override
     protected String prepareFrom() {
-        return "FROM TipoUsuario";
+        return "FROM tipo_usuario ";
     }
 
     @Override

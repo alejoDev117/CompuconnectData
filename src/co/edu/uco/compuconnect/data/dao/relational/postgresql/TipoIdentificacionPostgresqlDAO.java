@@ -72,7 +72,7 @@ public final class TipoIdentificacionPostgresqlDAO extends SqlDAO<TipoIdentifica
 
     @Override
     protected String prepareFrom() {
-        return "FROM tipo_identificacion";
+        return "FROM tipo_identificacion ";
     }
 
     @Override

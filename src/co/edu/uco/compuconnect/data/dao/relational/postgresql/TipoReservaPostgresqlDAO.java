@@ -25,7 +25,7 @@ public final class TipoReservaPostgresqlDAO extends SqlDAO<TipoReservaEntity> im
 
     @Override
     public void create(TipoReservaEntity entity) {
-        var sqlStatement = "INSERT INTO tipo_Reserva (identificador, nombre, descripcion) " +
+        var sqlStatement = "INSERT INTO tipo_reserva (identificador, nombre, descripcion) " +
                 "VALUES (?, ?, ?)";
 
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {

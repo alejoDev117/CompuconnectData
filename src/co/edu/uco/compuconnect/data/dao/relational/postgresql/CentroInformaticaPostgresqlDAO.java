@@ -25,7 +25,7 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 
     @Override
     public void create(CentroInformaticaEntity entity) {
-        var sqlStament = "INSERT INTO \"CentroInformatica\" (identificador, nombre, ubicacion, \"poseeVideoBeam\") VALUES (?, ?, ?, ?)";
+        var sqlStament = "INSERT INTO centro_informatica (identificador, nombre, ubicacion, \"poseeVideoBeam\") VALUES (?, ?, ?, ?)";
 
         try (var preparedStament = getConnection().prepareStatement(sqlStament)) {
             preparedStament.setObject(1, entity.getIdentificador());
@@ -69,7 +69,7 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 
     @Override
     public void update(CentroInformaticaEntity entity) {
-        var sqlStament = "UPDATE \"CentroInformatica\" SET nombre = ?, ubicacion = ?, \"poseeVideoBeam\" = ? WHERE identificador = ?";
+        var sqlStament = "UPDATE centro_informatica SET nombre = ?, ubicacion = ?, \"poseeVideoBeam\" = ? WHERE identificador = ?";
 
         try (var preparedStament = getConnection().prepareStatement(sqlStament)) {
         	preparedStament.setString(1, entity.getNombre());
@@ -87,7 +87,7 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 
     @Override
     public void delete(CentroInformaticaEntity entity) {
-        var sqlStatement = "DELETE FROM \"CentroInformatica\" WHERE identificador=?";
+        var sqlStatement = "DELETE FROM centro_informatica WHERE identificador=?";
         
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
             preparedStatement.setObject(1, entity.getIdentificador());
@@ -107,7 +107,7 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 
 	@Override
 	protected String prepareFrom() {
-		return "FROM \"CentroInformatica\"";
+		return "FROM centro_informatica ";
 	}
 
 	@Override
@@ -130,10 +130,11 @@ public final class CentroInformaticaPostgresqlDAO extends SqlDAO<CentroInformati
 				where.append(setWhere ? "WHERE " : "AND ").append("nombre=? ");
 				setWhere = false;
 			}
-			if(!UtilText.getUtilText().isEmpty(entity.getUbicacion())) {
-				parameters.add(entity.getUbicacion());
-				where.append("WHERE descripcion LIKE %?% ");
+			if (!UtilText.getUtilText().isEmpty(entity.getUbicacion())) {
+			    parameters.add(entity.getUbicacion());
+			    where.append(setWhere ? "WHERE" : "AND ").append("ubicacion=? ");
 			}
+
 			
 		}
 		
