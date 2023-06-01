@@ -17,6 +17,7 @@ import co.edu.uco.compuconnect.data.dao.AgendaDAO;
 import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
 import co.edu.uco.compuconnect.entities.AgendaEntity;
 import co.edu.uco.compuconnect.entities.CentroInformaticaEntity;
+import co.edu.uco.compuconnect.entities.EstadoPeriodoFuncionamientoEntity;
 import co.edu.uco.compuconnect.entities.PeriodoFuncionamientoEntity;
 
 public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  AgendaDAO {
@@ -104,13 +105,18 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 
 	@Override
 	protected String prepareSelect() {
-		return "SELECT agenda.identificador, periodo_funcionamiento.identificador, centro_informatica.identificador, agenda.nombre ";
+		return "SELECT  a.identificador, a.periodo_funcionamiento , a.centro_informatica, a.nombre, pf.nombre , pf.estado ,pf.fecha_inicio , pf.fecha_fin,\r\n"
+				+ "ep.nombre, ep.descripcion\r\n"
+				+ ",ci.nombre ,ci.ubicacion , ci.\"poseeVideoBeam\" ";
 	}
 
 	@Override
 	protected String prepareFrom() {
-		return "FROM agenda JOIN periodo_funcionamiento  ON periodo_funcionamiento.identificador = agenda.periodo_funcionamiento JOIN centro_informatica "
-				+ "ON centro_informatica.identificador = agenda.centro_informatica ";
+		return "FROM estados_periodo_funcionamiento ep join periodo_funcionamiento pf\r\n"
+				+ "ON ep.identificador = pf.estado\r\n"
+				+ "join agenda a \r\n"
+				+ "ON pf.identificador = a.periodo_funcionamiento join\r\n"
+				+ "centro_informatica ci ON a.centro_informatica = ci.identificador ";
 	}
 	
 
@@ -125,17 +131,17 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 			
 			if(!UtilUUID.isDefault(entity.getIdentificador())) {
 				parameters.add(entity.getIdentificador());
-				where.append("WHERE agenda.identificador=? ");
+				where.append("WHERE a.identificador=? ");
 				setWhere = false;
 			}
 			if(!UtilUUID.isDefault(entity.getPeriodoFuncionamiento().getIdentificador())) {
 				parameters.add(entity.getPeriodoFuncionamiento().getIdentificador());
-				where.append(setWhere ? "WHERE" : "AND ").append("periodo_funcionamiento.identificador=? ");
+				where.append(setWhere ? "WHERE" : "AND ").append("pr.identificador=? ");
 				setWhere = false;
 			}
 			if(!UtilUUID.isDefault(entity.getCentroInformatica().getIdentificador())) {
 				parameters.add(entity.getCentroInformatica().getIdentificador());
-				where.append(setWhere ? "WHERE" : "AND ").append("centro_informatica.identificador=? ");
+				where.append(setWhere ? "WHERE" : "AND ").append("ci.identificador=? ");
 			}
 			
 		
@@ -145,7 +151,7 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 
 	@Override
 	protected String prepareOrderBy() {
-		return "ORDER BY agenda.nombre ASC ";
+		return "ORDER BY a.nombre ASC ";
 	}
 
 
@@ -176,14 +182,25 @@ public final class AgendaPostgresqlDAO extends SqlDAO<AgendaEntity> implements  
 		try(var resultSet = preparedStatement.executeQuery()){
 			
 			while(resultSet.next()) {
-				var entityTmp = new AgendaEntity(resultSet.getObject("identificador",UUID.class),
-					resultSet.getObject("periodo_funcionamiento",PeriodoFuncionamientoEntity.class),
-					resultSet.getObject("centro_informatica",CentroInformaticaEntity.class), 
-					resultSet.getString("nombre"));
-				listResultSet.add(entityTmp);
+				
+				AgendaEntity entityTmp = new AgendaEntity(resultSet.getObject(1,UUID.class), 
+						PeriodoFuncionamientoEntity.create().setIdentificador(resultSet.getObject(2, UUID.class))
+						.setNombre(resultSet.getString(5)).setFechaInicio(resultSet.getDate(7)).setFechaFin(resultSet.getDate(8))
+						.setEstado(EstadoPeriodoFuncionamientoEntity.create()
+						.setIdentificador(resultSet.getObject(6, UUID.class))
+						.setNombre(resultSet.getString(9))
+						.setDescripcion(resultSet.getString(10))), 
+						CentroInformaticaEntity.create()
+						.setIdentificador(resultSet.getObject(3, UUID.class))
+						.setNombre(resultSet.getString(11))
+						.setUbicacion(resultSet.getString(12))
+						.setPoseeVideoBeam(resultSet.getBoolean(13)),
+						resultSet.getString(4));
+				
+				 listResultSet.add(entityTmp);
 			}
 			
-		}catch (SQLException exception) {
+		}catch (SQLException exception) { 
 			throw CompuconnectDataException.create(AgendaPostgresqlDAOMessage.EXCECUTE_QUERY_SQL_EXCEPTION_TECHNICAL_MESSAGE, AgendaPostgresqlDAOMessage.EXCECUTE_QUERY_SQL_EXCEPTION_USER_MESSAGE, exception);
 		}catch (Exception exception) {
 			throw CompuconnectDataException.create(AgendaPostgresqlDAOMessage.EXCECUTE_QUERY_EXCEPTION_TECHNICAL_MESSAGE, AgendaPostgresqlDAOMessage.EXCECUTE_QUERY_EXCEPTION_USER_MESSAGE, exception);

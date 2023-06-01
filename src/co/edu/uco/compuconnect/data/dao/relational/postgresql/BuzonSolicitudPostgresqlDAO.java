@@ -12,7 +12,6 @@ import co.edu.uco.compuconnect.crosscutting.utils.UtilUUID;
 import co.edu.uco.compuconnect.crosscutting.utils.Messages.BuzonSolicitudPostgresqlDAOMessage;
 import co.edu.uco.compuconnect.data.dao.BuzonSolicitudDAO;
 import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
-import co.edu.uco.compuconnect.entities.AgendaReservaEntity;
 import co.edu.uco.compuconnect.entities.BuzonSolicitudEntity;
 
 public final class BuzonSolicitudPostgresqlDAO extends SqlDAO<BuzonSolicitudEntity>  implements BuzonSolicitudDAO {

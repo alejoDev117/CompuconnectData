@@ -37,7 +37,7 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
             preparedStatement.setObject(2, entity.getAutor().getIdentificador());
             preparedStatement.setString(3, entity.getTipoReserva().toString());
             preparedStatement.setObject(4, entity.getFechaInicio());
-            preparedStatement.setObject(4, entity.getFechaFin());
+            preparedStatement.setObject(5, entity.getFechaFin());
             preparedStatement.setObject(6, entity.getFrecuencia().getIdentificador());
             preparedStatement.setObject(7, entity.getCentroInformatica().getIdentificador());
             preparedStatement.setString(8, entity.getDescripcion());
