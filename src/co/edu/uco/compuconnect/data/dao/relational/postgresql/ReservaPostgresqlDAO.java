@@ -4,6 +4,7 @@ import java.sql.Connection;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -13,9 +14,12 @@ import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilText;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilUUID;
 import co.edu.uco.compuconnect.crosscutting.utils.Messages.ReservaPostgresqlDAOMessage;
+import co.edu.uco.compuconnect.crosscutting.utils.Messages.UsuarioPostgresqlDAOMessage;
+import co.edu.uco.compuconnect.crosscutting.utils.UtilDateTime;
 import co.edu.uco.compuconnect.data.dao.ReservaDAO;
 import co.edu.uco.compuconnect.data.dao.relational.SqlDAO;
-import co.edu.uco.compuconnect.entities.CentroInformaticaEntity;
+import co.edu.uco.compuconnect.entities.AgendaEntity;
+import co.edu.uco.compuconnect.entities.DetalleReservaEntity;
 import co.edu.uco.compuconnect.entities.FrecuenciaEntity;
 import co.edu.uco.compuconnect.entities.ReservaEntity;
 import co.edu.uco.compuconnect.entities.TipoReservaEntity;
@@ -29,19 +33,21 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
 
     @Override
     public void create(ReservaEntity entity) {
-        var sqlStatement = "INSERT INTO reserva (identificador, autor, tipo, fecha_inicio, fecha_fin, frecuencia, centro_informatica, descripcion, hora_creacion) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        var sqlStatement = "INSERT INTO reserva (identificador ,autor, tipo, fecha_inicio, fecha_fin, frecuencia, descripcion, hora_creacion , agenda, detalle) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+        
 
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
             preparedStatement.setObject(1, entity.getIdentificador());
             preparedStatement.setObject(2, entity.getAutor().getIdentificador());
-            preparedStatement.setString(3, entity.getTipoReserva().toString());
-            preparedStatement.setObject(4, entity.getFechaInicio());
-            preparedStatement.setObject(5, entity.getFechaFin());
+            preparedStatement.setObject(3, entity.getTipoReserva().getIdentificador());
+            preparedStatement.setObject(4, new java.sql.Date(entity.getFechaInicio().getTime()));
+            preparedStatement.setObject(5, new java.sql.Date(entity.getFechaFin().getTime())); 
             preparedStatement.setObject(6, entity.getFrecuencia().getIdentificador());
-            preparedStatement.setObject(7, entity.getCentroInformatica().getIdentificador());
-            preparedStatement.setString(8, entity.getDescripcion());
-            preparedStatement.setObject(9, entity.getHoraCreacion());
+            preparedStatement.setString(7, entity.getDescripcion());
+            preparedStatement.setObject(8, new java.sql.Date(entity.getHoraCreacion().getTime()));
+            preparedStatement.setObject(9, entity.getAgenda().getIdentificador());
+            preparedStatement.setObject(10, entity.getDetalle().getIdentificador());
 
             preparedStatement.executeUpdate();
 
@@ -55,7 +61,7 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
 
     @Override
     public void delete(ReservaEntity entity) {
-        var sqlStatement = "DELETE FROM reserva WHERE identificador = ?";
+        var sqlStatement = "DELETE FROM reserva WHERE identificador = ? ";
 
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
             preparedStatement.setObject(1, entity.getIdentificador());
@@ -77,6 +83,7 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
     	sqlStatement.append(prepareFrom());
     	sqlStatement.append(prepareWhere(entity, listParameters));
     	sqlStatement.append(prepareOrderBy());
+
     	
     	try (var prepareStatement = getConnection().prepareStatement(sqlStatement.toString())){
     		setParameters(prepareStatement, listParameters);
@@ -93,8 +100,8 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
 
     @Override
     public void update(ReservaEntity entity) {
-        var sqlStatement = "UPDATE reserva SET  fechaInicio = ?, fechaFin = ? " +
-                ", descripcion = ?  WHERE identificador = ?";
+        var sqlStatement = "UPDATE reserva SET  fecha_inicio = ?, fecha_fin = ? " +
+                ", descripcion = ?  WHERE identificador = ? ";
 
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
             preparedStatement.setObject(1, entity.getFechaInicio().getTime());
@@ -113,13 +120,14 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
     
     @Override
     protected String prepareSelect() {
-        return "SELECT identificador, autor, tipoReserva, fechaInicio, fechaFin, frecuencia, centroInformatica, descripcion, horaCreacion ";
+        return "SELECT r.identificador, u.nombre , tr.identificador, tr.nombre , tr.descripcion , r.fecha_inicio, r.fecha_fin, f.identificador, f.nombre , f.descripcion , dr.identificador, r.descripcion, r.hora_creacion ";
     }
 
     @Override
     protected String prepareFrom() {
-        return "FROM reserva r JOIN usuario u ON u.identificador = r.autor JOIN tipo_reserva tr ON tr.identificador = r.tipo JOIN frecuencia f "
-        		+ "ON f.identificador = r.frecuencia JOIN centro_informatica ci ON ci.identificador = r.centro_informatica ";
+	        return "FROM reserva r JOIN usuario u ON u.identificador = r.autor JOIN tipo_reserva tr ON tr.identificador = r.tipo JOIN frecuencia f "
+	        		+ "ON f.identificador = r.frecuencia JOIN detalle_reserva dr ON dr.identificador = r.detalle JOIN dia_semanal ds ON"
+	        		+ " ds.identificador = dr.dia_semanal_id JOIN agenda a ON a.identificador = r.agenda ";
     }
 
     @Override
@@ -133,55 +141,42 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
 
             if (!UtilUUID.isDefault(entity.getIdentificador())) {
                 parameters.add(entity.getIdentificador());
-                where.append("WHERE identificador = ? ");
+                where.append("WHERE r.identificador = ? ");
                 setWhere = false;
             }
 
-            if (!UtilObject.isNull(entity.getAutor())) {
-                parameters.add(entity.getAutor());
-                where.append(setWhere ? "WHERE " : "AND ").append("autor = ? ");
+            if (!UtilUUID.isDefault(entity.getAgenda().getIdentificador())) {
+                parameters.add(entity.getAgenda().getIdentificador());
+                where.append(setWhere ? "WHERE " : "AND ").append("r.agenda = ? ");
                 setWhere = false;
             }
-
-            if (!UtilObject.isNull(entity.getTipoReserva())) {
-                parameters.add(entity.getTipoReserva());
-                where.append(setWhere ? "WHERE " : "AND ").append("tipoReserva = ? ");
-                setWhere = false;
-            }
-
-            if (!UtilObject.isNull(entity.getFechaInicio())) {
+         /*   if (!entity.getFechaInicio().equals(UtilDateTime.getDefaultValueDate())) {
                 parameters.add(entity.getFechaInicio());
-                where.append(setWhere ? "WHERE " : "AND ").append("fechaInicio = ? ");
+                where.append(setWhere ? "WHERE " : "AND ").append("r.fecha_inicio >= ? ");
                 setWhere = false;
             }
 
-            if (!UtilObject.isNull(entity.getFechaFin())) {
+            if (!entity.getFechaFin().equals(UtilDateTime.getDefaultValueDate())) {
                 parameters.add(entity.getFechaFin());
-                where.append(setWhere ? "WHERE " : "AND ").append("fechaFin = ? ");
+                where.append(setWhere ? "WHERE " : "AND ").append("r.fecha_fin <= ? ");
+                setWhere = false;
+            }*/
+
+            if (!UtilText.getUtilText().isEmpty(entity.getDetalle().getDia().getNombre())) {
+                parameters.add(entity.getDetalle().getDia().getNombre());
+                where.append(setWhere ? "WHERE " : "AND ").append("ds.nombre = ? ");
                 setWhere = false;
             }
 
-            if (!UtilObject.isNull(entity.getFrecuencia())) {
-                parameters.add(entity.getFrecuencia());
-                where.append(setWhere ? "WHERE " : "AND ").append("frecuencia = ? ");
-                setWhere = false;
-            }
-
-            if (!UtilObject.isNull(entity.getCentroInformatica())) {
-                parameters.add(entity.getCentroInformatica());
-                where.append(setWhere ? "WHERE " : "AND ").append("centroInformatica = ? ");
-                setWhere = false;
-            }
-
-            if (!UtilText.getUtilText().isEmpty(entity.getDescripcion())) {
+            if (!entity.getDetalle().getHorainicio().equals(UtilDateTime.getDefaultValueLocaltime())) {
                 parameters.add(entity.getDescripcion());
-                where.append(setWhere ? "WHERE " : "AND ").append("descripcion LIKE ? ");
+                where.append(setWhere ? "WHERE " : "AND ").append("dr.hora_inicio >= ? ");
                 setWhere = false;
             }
 
-            if (!UtilObject.isNull(entity.getHoraCreacion())) {
-                parameters.add(entity.getHoraCreacion());
-                where.append(setWhere ? "WHERE " : "AND ").append("horaCreacion = ? ");
+            if (!entity.getDetalle().getHorainicio().equals(UtilDateTime.getDefaultValueLocaltime())) {
+                parameters.add(entity.getDescripcion());
+                where.append(setWhere ? "WHERE " : "AND ").append("dr.hora_fin <= ? ");
                 setWhere = false;
             }
         }
@@ -191,27 +186,28 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
 
     @Override
     protected String prepareOrderBy() {
-        return "ORDER BY fechaInicio ASC";
+        return "ORDER BY r.identificador ASC ";
     }
 
-	@Override
-	protected void setParameters(PreparedStatement prepareStat, List<Object> parameters) {
-		try {
-			
-		if(!UtilObject.isNull(parameters) && !UtilObject.isNull(prepareStat)) {
-			for(int index = 0; index < parameters.size();index++) {
-				prepareStat.setObject(index + 1, parameters.get(index));
-				
-			}
-		}
-		}catch (SQLException exception) {
-			throw CompuconnectDataException.create(ReservaPostgresqlDAOMessage.SET_PARAMETERS_SQL_EXCEPTION_TECHNICAL_MESSAGE, ReservaPostgresqlDAOMessage.SET_PARAMETERS_SQL_EXCEPTION_USER_MESSAGE, exception);
-		}catch (Exception exception) {
-			throw CompuconnectDataException.create(ReservaPostgresqlDAOMessage.SET_PARAMETERS_EXCEPTION_TECHNICAL_MESSAGE, ReservaPostgresqlDAOMessage.SET_PARAMETERS_EXCEPTION_USER_MESSAGE, exception);
-		}
-		
-	}
-
+    @Override
+    protected void setParameters(PreparedStatement preparedStatement, List<Object> parameters) {
+        try {
+            if (!UtilObject.isNull(parameters) && !UtilObject.isNull(preparedStatement)) {
+                for (int index = 0; index < parameters.size(); index++) {
+                    Object param = parameters.get(index);
+                    if (param instanceof java.util.Date) {
+                        preparedStatement.setObject(index + 1, new java.sql.Timestamp(((java.util.Date) param).getTime()), Types.TIMESTAMP);
+                    } else {
+                        preparedStatement.setObject(index + 1, param);
+                    }
+                }
+            }
+        } catch (SQLException exception) {
+            throw CompuconnectDataException.create(UsuarioPostgresqlDAOMessage.SET_PARAMETERS_SQL_EXCEPTION_TECHNICAL_MESSAGE, UsuarioPostgresqlDAOMessage.SET_PARAMETERS_SQL_EXCEPTION_USER_MESSAGE, exception);
+        } catch (Exception exception) {
+            throw CompuconnectDataException.create(UsuarioPostgresqlDAOMessage.SET_PARAMETERS_EXCEPTION_TECHNICAL_MESSAGE, UsuarioPostgresqlDAOMessage.SET_PARAMETERS_EXCEPTION_USER_MESSAGE, exception);
+        }
+    }
 	@Override
 	protected List<ReservaEntity> executeQuery(PreparedStatement preparedStatement) {
 		List<ReservaEntity> listResultSet = new ArrayList<>();		
@@ -219,14 +215,16 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
 		try(var resultSet = preparedStatement.executeQuery()){
 			
 			while(resultSet.next()) {
-				var entityTmp = new ReservaEntity(resultSet.getObject("identificador",UUID.class)
-						, resultSet.getObject("autor",UsuarioEntity.class),
-						resultSet.getObject("tipoReserva",TipoReservaEntity.class), 
-						resultSet.getDate("fechaInicio"), resultSet.getDate("fechaFin"), 
-						resultSet.getObject("frecuencia",FrecuenciaEntity.class),
-						resultSet.getObject("centroInformatica",CentroInformaticaEntity.class),
+				var entityTmp = new ReservaEntity(resultSet.getObject("identificador",UUID.class),
+						UsuarioEntity.create().setIdentificador(resultSet.getObject("identificador", UUID.class)),
+						TipoReservaEntity.create().setIdentificador(resultSet.getObject("identificador", UUID.class)).setNombre(resultSet.getString("nombre")).setDescripcion(resultSet.getString("descripcion")),
+						resultSet.getTimestamp("fecha_inicio"),
+						resultSet.getTimestamp("fecha_fin"),
+						FrecuenciaEntity.create().setIdentificador(resultSet.getObject("identificador", UUID.class)).setNombre(resultSet.getString("nombre")).setDescripcion(resultSet.getString("descripcion")),
 						resultSet.getString("descripcion"),
-						resultSet.getDate("horaCreacion"));
+						resultSet.getTimestamp("hora_creacion"),
+						AgendaEntity.create().setIdentificador(resultSet.getObject("identificador", UUID.class)).setNombre(resultSet.getString("nombre")),
+						DetalleReservaEntity.create().setIdentificador(resultSet.getObject("identificador", UUID.class)));
 				listResultSet.add(entityTmp);
 			}
 			
