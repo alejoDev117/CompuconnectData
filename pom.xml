@@ -5,6 +5,10 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>CompuconnectData</name>
   <description>Componente encargado de gestionar las clases relacionadas con la fuente persistente de datos.</description>
+  <properties>
+  	<sonar.organization>alejodev117</sonar.organization>
+  	<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+  </properties>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
