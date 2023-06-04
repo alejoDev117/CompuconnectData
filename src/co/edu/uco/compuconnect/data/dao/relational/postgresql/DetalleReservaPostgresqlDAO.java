@@ -191,8 +191,8 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 	            var entityTmp = DetalleReservaEntity.create().setIdentificador(resultSet.getObject(1,UUID.class)).
 	            		setReserva(ReservaEntity.create().setIdentificador(resultSet.getObject(2,UUID.class))).
 	            		setDia(DiaSemanalEntity.create().setIdentificador(resultSet.getObject(3,UUID.class)).setNombre(resultSet.getString(4))).
-	            		setHorainicio(UtilDateTime.toLocalTimeFromDate(resultSet.getDate(5))).
-	            		setHorafin(UtilDateTime.toLocalTimeFromDate(resultSet.getDate(6)));
+	            		setHorainicio(UtilDateTime.toLocalTimeFromTime(resultSet.getTime(5))).
+	            		setHorafin(UtilDateTime.toLocalTimeFromTime(resultSet.getTime(6)));
 	            listResultSet.add(entityTmp);
 	        }
 	       
