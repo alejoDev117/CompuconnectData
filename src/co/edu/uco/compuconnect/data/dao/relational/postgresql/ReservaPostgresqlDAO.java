@@ -33,8 +33,8 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
 
     @Override
     public void create(ReservaEntity entity) {
-        var sqlStatement = "INSERT INTO reserva (identificador ,autor, tipo, fecha_inicio, fecha_fin, frecuencia, descripcion, hora_creacion , agenda, detalle) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+        var sqlStatement = "INSERT INTO reserva (identificador ,autor, tipo, fecha_inicio, fecha_fin, frecuencia, descripcion, hora_creacion , agenda) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
         
 
         try (var preparedStatement = getConnection().prepareStatement(sqlStatement)) {
@@ -47,7 +47,6 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
             preparedStatement.setString(7, entity.getDescripcion());
             preparedStatement.setObject(8, new java.sql.Date(entity.getHoraCreacion().getTime()));
             preparedStatement.setObject(9, entity.getAgenda().getIdentificador());
-            preparedStatement.setObject(10, entity.getDetalle().getIdentificador());
 
             preparedStatement.executeUpdate();
 
@@ -120,14 +119,14 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
     
     @Override
     protected String prepareSelect() {
-        return "SELECT r.identificador, u.nombre , tr.identificador, tr.nombre , tr.descripcion , r.fecha_inicio, r.fecha_fin, f.identificador, f.nombre , f.descripcion , dr.identificador, r.descripcion, r.hora_creacion ";
+        return "SELECT r.identificador , r.agenda, u.nombre, u.identificador, tr.identificador, tr.nombre, tr.descripcion, r.fecha_inicio, r.fecha_fin, f.identificador, f.nombre, f.descripcion, r.descripcion, r.hora_creacion, a.nombre ";
     }
 
     @Override
     protected String prepareFrom() {
 	        return "FROM reserva r JOIN usuario u ON u.identificador = r.autor JOIN tipo_reserva tr ON tr.identificador = r.tipo JOIN frecuencia f "
-	        		+ "ON f.identificador = r.frecuencia JOIN detalle_reserva dr ON dr.identificador = r.detalle JOIN dia_semanal ds ON"
-	        		+ " ds.identificador = dr.dia_semanal_id JOIN agenda a ON a.identificador = r.agenda ";
+	        		+ "ON f.identificador = r.frecuencia "
+	        		+ " JOIN agenda a ON a.identificador = r.agenda ";
     }
 
     @Override
@@ -139,9 +138,9 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
 
         if (!UtilObject.isNull(entity)) {
 
-            if (!UtilUUID.isDefault(entity.getIdentificador())) {
+  if (!UtilUUID.isDefault(entity.getIdentificador())) {
                 parameters.add(entity.getIdentificador());
-                where.append("WHERE r.identificador = ? ");
+                where.append("WHERE  r.identificador = ? ");
                 setWhere = false;
             }
 
@@ -150,35 +149,23 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
                 where.append(setWhere ? "WHERE " : "AND ").append("r.agenda = ? ");
                 setWhere = false;
             }
-         /*   if (!entity.getFechaInicio().equals(UtilDateTime.getDefaultValueDate())) {
+           if (!entity.getFechaInicio().equals(UtilDateTime.getDefaultValueDate())) {
                 parameters.add(entity.getFechaInicio());
-                where.append(setWhere ? "WHERE " : "AND ").append("r.fecha_inicio >= ? ");
+                where.append(setWhere ? "WHERE " : "AND ").append("(r.fecha_inicio >= ?  ");
                 setWhere = false;
             }
+           if (!entity.getFechaFin().equals(UtilDateTime.getDefaultValueDate()) ) {
+               parameters.add(entity.getFechaFin());
+               where.append(setWhere ? "WHERE " : "OR ").append(" r.fecha_fin <= ? ");
+               setWhere = false;
 
-            if (!entity.getFechaFin().equals(UtilDateTime.getDefaultValueDate())) {
-                parameters.add(entity.getFechaFin());
-                where.append(setWhere ? "WHERE " : "AND ").append("r.fecha_fin <= ? ");
-                setWhere = false;
-            }*/
+           }
+           if (!entity.getFechaFin().equals(UtilDateTime.getDefaultValueDate()) ) {
+               parameters.add(entity.getFechaFin());
+               where.append(setWhere ? "WHERE " : "OR ").append("r.fecha_fin >= ? )");
+               setWhere = false;
+           }
 
-            if (!UtilText.getUtilText().isEmpty(entity.getDetalle().getDia().getNombre())) {
-                parameters.add(entity.getDetalle().getDia().getNombre());
-                where.append(setWhere ? "WHERE " : "AND ").append("ds.nombre = ? ");
-                setWhere = false;
-            }
-
-            if (!entity.getDetalle().getHorainicio().equals(UtilDateTime.getDefaultValueLocaltime())) {
-                parameters.add(entity.getDescripcion());
-                where.append(setWhere ? "WHERE " : "AND ").append("dr.hora_inicio >= ? ");
-                setWhere = false;
-            }
-
-            if (!entity.getDetalle().getHorainicio().equals(UtilDateTime.getDefaultValueLocaltime())) {
-                parameters.add(entity.getDescripcion());
-                where.append(setWhere ? "WHERE " : "AND ").append("dr.hora_fin <= ? ");
-                setWhere = false;
-            }
         }
 
         return where.toString();
@@ -214,20 +201,17 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
 		
 		try(var resultSet = preparedStatement.executeQuery()){
 			
-			while(resultSet.next()) {
-				var entityTmp = new ReservaEntity(resultSet.getObject("identificador",UUID.class),
-						UsuarioEntity.create().setIdentificador(resultSet.getObject("identificador", UUID.class)),
-						TipoReservaEntity.create().setIdentificador(resultSet.getObject("identificador", UUID.class)).setNombre(resultSet.getString("nombre")).setDescripcion(resultSet.getString("descripcion")),
-						resultSet.getTimestamp("fecha_inicio"),
-						resultSet.getTimestamp("fecha_fin"),
-						FrecuenciaEntity.create().setIdentificador(resultSet.getObject("identificador", UUID.class)).setNombre(resultSet.getString("nombre")).setDescripcion(resultSet.getString("descripcion")),
-						resultSet.getString("descripcion"),
-						resultSet.getTimestamp("hora_creacion"),
-						AgendaEntity.create().setIdentificador(resultSet.getObject("identificador", UUID.class)).setNombre(resultSet.getString("nombre")),
-						DetalleReservaEntity.create().setIdentificador(resultSet.getObject("identificador", UUID.class)));
+		while(resultSet.next()) {
+				var entityTmp = ReservaEntity.create().setIdentificador(resultSet.getObject(1,UUID.class)).
+						setAutor(UsuarioEntity.create().setNombre(resultSet.getString(3)).setIdentificacion(resultSet.getString(4))).
+						setTipoReserva(TipoReservaEntity.create().setIdentificador(resultSet.getObject(5,UUID.class)).setNombre(resultSet.getString(6))).
+						setFechaInicio(resultSet.getDate(8)).setFechaFin(resultSet.getDate(9)).
+						setFrecuencia(FrecuenciaEntity.create().setIdentificador(resultSet.getObject(10,UUID.class)).setNombre(resultSet.getString(11))).
+						setAgenda(AgendaEntity.create().setIdentificador(resultSet.getObject(2,UUID.class)).setNombre(resultSet.getString(15))).
+						setDescripcion(resultSet.getString(13));
 				listResultSet.add(entityTmp);
 			}
-			
+		
 		}catch (SQLException exception) {
 			throw CompuconnectDataException.create(ReservaPostgresqlDAOMessage.EXCECUTE_QUERY_SQL_EXCEPTION_TECHNICAL_MESSAGE, ReservaPostgresqlDAOMessage.EXCECUTE_QUERY_SQL_EXCEPTION_USER_MESSAGE, exception);
 		}catch (Exception exception) {
