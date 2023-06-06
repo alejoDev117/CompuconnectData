@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import co.edu.uco.compuconnect.crosscutting.exceptions.CompuconnectDataException;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilObject;
+import co.edu.uco.compuconnect.crosscutting.utils.UtilText;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilUUID;
 import co.edu.uco.compuconnect.crosscutting.utils.Messages.DetalleReservaPostgresqlDAOMessage;
 import co.edu.uco.compuconnect.crosscutting.utils.UtilDateTime;
@@ -120,32 +121,40 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 
 	    if (!UtilObject.isNull(entity)) {
 
-	        if (!UtilUUID.isDefault(entity.getIdentificador())) {
+	      if (!UtilUUID.isDefault(entity.getIdentificador())) {
 	            parameters.add(entity.getIdentificador());
-	            where.append("WHERE dr.identificador = ? ");
+	            where.append("WHERE  dr.identificador = ? ");
+	            setWhere = false;
+	        }
+	      
+	        if (!UtilUUID.isDefault(entity.getReserva().getIdentificador())) {
+	            parameters.add(entity.getReserva().getIdentificador());
+	            where.append(setWhere ? "WHERE " : "AND ").append(" dr.reserva = ? ");
 	            setWhere = false;
 	        }
 	        
-
-	        if (!UtilUUID.isDefault(entity.getReserva().getIdentificador())) {
-	            parameters.add(entity.getReserva().getIdentificador());
-	            where.append(setWhere ? "WHERE" : "AND ").append("dr.reserva = ? ");
-	            setWhere = false;
+	        if(!UtilText.getUtilText().isEmpty(entity.getDia().getNombre())) {
+	        	 parameters.add(entity.getDia().getNombre());
+		         where.append(setWhere ? "WHERE " : "AND ").append(" d.nombre = ? ");
+		         setWhere = false;
 	        }
-
-	        if (!entity.getHorainicio().equals(UtilDateTime.getDefaultValueLocaltime())) {
-	            parameters.add(entity.getHorainicio());
-	            where.append(setWhere ? "WHERE" : "AND ").append("(dr.hora_inicio >= ? ");
-	            setWhere = false;
-	        }
-
-	        if (!entity.getHorafin().equals(UtilDateTime.getDefaultValueLocaltime())) {
-	            parameters.add(entity.getHorafin());
-	            where.append(setWhere ? "WHERE" : "OR ").append("dr.hora_fin <= ? OR dr.hora_fin >= ?) ");
+	       if(!entity.getHorainicio().equals(UtilDateTime.getDefaultValueLocaltime()) && !entity.getHorafin().equals(UtilDateTime.getDefaultValueLocaltime())) {
+	        	parameters.add(entity.getHorainicio());
+	        	parameters.add(entity.getHorafin());
+	        	parameters.add(entity.getHorainicio());
+	        	parameters.add(entity.getHorafin());
+	        	parameters.add(entity.getHorainicio());
+	        	parameters.add(entity.getHorafin());
+	        	where.append("AND ").append("((dr.hora_inicio >= ? AND dr.hora_inicio < ?) "
+	        			+ "OR (dr.hora_fin > ? AND dr.hora_fin <= ?) "
+	        			+ "OR (dr.hora_inicio <= ? AND dr.hora_fin >= ?)) ");
+	           
 	        }
 	    }
 	    return where.toString();
+	    
 	}
+	
 
 
 	@Override
@@ -158,19 +167,8 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 	    try {
 	        if (!UtilObject.isNull(parameters) && !UtilObject.isNull(preparedStatement)) {
 	            for (int index = 0; index < parameters.size(); index++) {
-	                Object param = parameters.get(index);
-	                if (param instanceof UUID) {
-	                    preparedStatement.setObject(index + 1, param, Types.OTHER);
-	                } else if (param instanceof LocalDate) {
-	                    LocalDate localDate = (LocalDate) param;
-	                    preparedStatement.setDate(index + 1, java.sql.Date.valueOf(localDate));
-	                } else if (param instanceof LocalTime) {
-	                    LocalTime localTime = (LocalTime) param;
-	                    int secondsOfDay = localTime.toSecondOfDay();
-	                    preparedStatement.setTime(index + 1, new java.sql.Time(secondsOfDay * 1000));
-	                } else {
-	                    preparedStatement.setObject(index + 1, param);
-	                }
+	            	preparedStatement.setObject(index + 1, parameters.get(index));
+	                
 	            }
 	        }
 	    } catch (SQLException exception) {
@@ -193,6 +191,7 @@ public final class DetalleReservaPostgresqlDAO extends SqlDAO<DetalleReservaEnti
 	            		setDia(DiaSemanalEntity.create().setIdentificador(resultSet.getObject(3,UUID.class)).setNombre(resultSet.getString(4))).
 	            		setHorainicio(UtilDateTime.toLocalTimeFromTime(resultSet.getTime(5))).
 	            		setHorafin(UtilDateTime.toLocalTimeFromTime(resultSet.getTime(6)));
+	            
 	            listResultSet.add(entityTmp);
 	        }
 	       

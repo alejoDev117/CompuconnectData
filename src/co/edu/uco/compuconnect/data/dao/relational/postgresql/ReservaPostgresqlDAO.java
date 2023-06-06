@@ -143,28 +143,23 @@ public final class ReservaPostgresqlDAO extends SqlDAO<ReservaEntity> implements
                 where.append("WHERE  r.identificador = ? ");
                 setWhere = false;
             }
-
+  
             if (!UtilUUID.isDefault(entity.getAgenda().getIdentificador())) {
                 parameters.add(entity.getAgenda().getIdentificador());
                 where.append(setWhere ? "WHERE " : "AND ").append("r.agenda = ? ");
                 setWhere = false;
             }
-           if (!entity.getFechaInicio().equals(UtilDateTime.getDefaultValueDate())) {
-                parameters.add(entity.getFechaInicio());
-                where.append(setWhere ? "WHERE " : "AND ").append("(r.fecha_inicio >= ?  ");
-                setWhere = false;
+            if(!entity.getFechaInicio().equals(UtilDateTime.getDefaultValueDate()) && !entity.getFechaFin().equals(UtilDateTime.getDefaultValueDate())) {
+            	parameters.add(entity.getFechaInicio());
+            	parameters.add(entity.getFechaFin());
+            	parameters.add(entity.getFechaInicio());
+            	parameters.add(entity.getFechaFin());
+            	parameters.add(entity.getFechaInicio());
+            	parameters.add(entity.getFechaFin());
+            	where.append(setWhere ? "WHERE " : "AND ").append(" ((r.fecha_inicio >= ? AND r.fecha_fin <= ?) "
+            			+ " OR (r.fecha_inicio < ? AND r.fecha_fin > ? ) "
+            			+ " OR (r.fecha_fin > ? AND r.fecha_fin <= ?)) ");
             }
-           if (!entity.getFechaFin().equals(UtilDateTime.getDefaultValueDate()) ) {
-               parameters.add(entity.getFechaFin());
-               where.append(setWhere ? "WHERE " : "OR ").append(" r.fecha_fin <= ? ");
-               setWhere = false;
-
-           }
-           if (!entity.getFechaFin().equals(UtilDateTime.getDefaultValueDate()) ) {
-               parameters.add(entity.getFechaFin());
-               where.append(setWhere ? "WHERE " : "OR ").append("r.fecha_fin >= ? )");
-               setWhere = false;
-           }
 
         }
 
